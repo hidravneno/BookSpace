@@ -1,0 +1,7 @@
+{
+  "name": "BookSpace",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
