@@ -1,0 +1,122 @@
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Registro</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="register-container">
+    <img
+      src="assets/LOGO.png"
+      alt="Logo de BOOKSPACE"
+    />
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Nombre completo</ion-label>
+          <ion-input type="text" [(ngModel)]="name"></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input type="email" [(ngModel)]="email"></ion-input>
+        </ion-item>
+        
+        <ion-item>
+          <ion-label position="floating">Contraseña</ion-label>
+          <ion-input 
+            [type]="showPassword ? 'text' : 'password'" 
+            [(ngModel)]="password"
+            (ionInput)="validatePassword()">
+          </ion-input>
+          <ion-button 
+            fill="clear" 
+            slot="end" 
+            (click)="togglePasswordVisibility()">
+            <ion-icon [name]="showPassword ? 'eye-off' : 'eye'"></ion-icon>
+          </ion-button>
+        </ion-item>
+        
+        <!-- Password validation messages -->
+        <div class="password-rules" *ngIf="password && !isPasswordValid">
+          <ion-text color="danger">
+            <p class="rule-text">La contraseña debe cumplir los siguientes requisitos:</p>
+            <ul class="rules-list">
+              <li [class.valid]="passwordRules.minLength">
+                <ion-icon [name]="passwordRules.minLength ? 'checkmark-circle' : 'close-circle'" 
+                         [color]="passwordRules.minLength ? 'success' : 'danger'"></ion-icon>
+                Mínimo 8 caracteres
+              </li>
+              <li [class.valid]="passwordRules.hasUppercase">
+                <ion-icon [name]="passwordRules.hasUppercase ? 'checkmark-circle' : 'close-circle'" 
+                         [color]="passwordRules.hasUppercase ? 'success' : 'danger'"></ion-icon>
+                Una letra mayúscula
+              </li>
+              <li [class.valid]="passwordRules.hasLowercase">
+                <ion-icon [name]="passwordRules.hasLowercase ? 'checkmark-circle' : 'close-circle'" 
+                         [color]="passwordRules.hasLowercase ? 'success' : 'danger'"></ion-icon>
+                Una letra minúscula
+              </li>
+              <li [class.valid]="passwordRules.hasNumber">
+                <ion-icon [name]="passwordRules.hasNumber ? 'checkmark-circle' : 'close-circle'" 
+                         [color]="passwordRules.hasNumber ? 'success' : 'danger'"></ion-icon>
+                Un número
+              </li>
+              <li [class.valid]="passwordRules.hasSpecialChar">
+                <ion-icon [name]="passwordRules.hasSpecialChar ? 'checkmark-circle' : 'close-circle'" 
+                         [color]="passwordRules.hasSpecialChar ? 'success' : 'danger'"></ion-icon>
+                Un carácter especial (!@#$%^&*)
+              </li>
+            </ul>
+          </ion-text>
+        </div>
+        
+        <ion-item>
+          <ion-label position="floating">Confirmar contraseña</ion-label>
+          <ion-input 
+            [type]="showConfirmPassword ? 'text' : 'password'" 
+            [(ngModel)]="confirmPassword"
+            (ionInput)="checkPasswordMatch()">
+          </ion-input>
+          <ion-button 
+            fill="clear" 
+            slot="end" 
+            (click)="toggleConfirmPasswordVisibility()">
+            <ion-icon [name]="showConfirmPassword ? 'eye-off' : 'eye'"></ion-icon>
+          </ion-button>
+        </ion-item>
+        
+        <!-- Password match validation -->
+        <div class="password-match" *ngIf="confirmPassword && !passwordsMatch">
+          <ion-text color="danger">
+            <p class="rule-text">
+              <ion-icon name="close-circle" color="danger"></ion-icon>
+              Las contraseñas no coinciden
+            </p>
+          </ion-text>
+        </div>
+        
+        <div class="password-match" *ngIf="confirmPassword && passwordsMatch">
+          <ion-text color="success">
+            <p class="rule-text">
+              <ion-icon name="checkmark-circle" color="success"></ion-icon>
+              Las contraseñas coinciden
+            </p>
+          </ion-text>
+        </div>
+        
+        <ion-button 
+          expand="block" 
+          fill="solid" 
+          (click)="register()"
+          [disabled]="!isFormValid()">
+          Registrarse
+        </ion-button>
+        
+        <ion-button expand="block" fill="clear" (click)="goToLogin()">
+          ¿Ya tienes cuenta? Inicia sesión
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
