@@ -1,0 +1,135 @@
+// Keyframes para las animaciones
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  70% {
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.02);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.login-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+  box-sizing: border-box;
+
+  h2 {
+    text-align: center;
+    color: var(--white);
+    margin: 0 auto 20px auto;
+    width: 100%;
+    display: block;
+    font-size: 2rem;
+    font-weight: bold;
+    animation: fadeInDown 1s ease-out;
+  }
+
+  img {
+    display: block;
+    margin: 0 auto 25px auto;
+    max-width: 350px;
+    width: 80%;
+    height: auto;
+    text-align: center;
+    animation: bounceIn 1.2s ease-out 0.3s both;
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+
+  ion-card {
+    width: 100%;
+    max-width: 400px;
+    animation: slideInUp 1s ease-out 0.6s both;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    ion-item {
+      margin-bottom: 15px;
+      transition: all 0.3s ease;
+      
+      &:focus-within {
+        transform: scale(1.02);
+      }
+    }
+
+    ion-button {
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      }
+      
+      &:active {
+        transform: translateY(0);
+      }
+    }
+  }
+}
+
+// Eye icon button styles
+ion-button[slot="end"] {
+  --padding-start: 8px;
+  --padding-end: 8px;
+  
+  ion-icon {
+    font-size: 1.2rem;
+  }
+}
+
