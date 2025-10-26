@@ -7,12 +7,7 @@ import {
   IonTitle, 
   IonContent, 
   IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
   IonIcon,
-  IonText,
   IonButtons
 } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
@@ -31,12 +26,7 @@ import { CommonModule } from '@angular/common';
     IonTitle, 
     IonContent, 
     IonButton,
-    IonCard,
-    IonCardContent,
-    IonCardHeader,
-    IonCardTitle,
     IonIcon,
-    IonText,
     IonButtons,
     CommonModule
   ],
