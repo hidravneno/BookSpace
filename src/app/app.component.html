@@ -1,3 +1,4 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <app-sidebar-menu *ngIf="isLoggedIn"></app-sidebar-menu>
+  <ion-router-outlet id="main-content"></ion-router-outlet>
 </ion-app>
