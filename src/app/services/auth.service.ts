@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import emailjs from '@emailjs/browser';
+import { environment } from '../../environments/environment';
 
 export interface User {
   id: string;
@@ -59,6 +61,9 @@ export class AuthService {
         email: newUser.email
       };
 
+      // Enviar email de registro
+      this.sendRegistrationEmail(authUser);
+
       return { 
         success: true, 
         message: 'Usuario registrado exitosamente',
@@ -90,6 +95,9 @@ export class AuthService {
 
       // Guardar sesión actual
       this.setCurrentUser(authUser);
+
+      // Enviar email de inicio de sesión
+      this.sendLoginEmail(authUser);
 
       return { 
         success: true, 
@@ -172,5 +180,54 @@ export class AuthService {
    */
   private generateId(): string {
     return Date.now().toString(36) + Math.random().toString(36).substr(2);
+  }
+
+  /**
+   * Enviar email de registro
+   */
+  private sendRegistrationEmail(user: AuthUser): void {
+    const templateParams = {
+      to_email: user.email,
+      to_name: user.name,
+      message: 'Te has registrado exitosamente en SPACEBOOK.'
+    };
+
+    emailjs.send(environment.emailjs.serviceId, environment.emailjs.templateRegisterId, templateParams, environment.emailjs.publicKey)
+      .then((response) => {
+        console.log('Email de registro enviado:', response);
+      })
+      .catch((error) => {
+        console.error('Error enviando email de registro:', error);
+      });
+  }
+
+  /**
+   * Enviar email de inicio de sesión
+   */
+  private sendLoginEmail(user: AuthUser): void {
+    const now = new Date();
+    const loginTime = now.toLocaleString('es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+
+    const templateParams = {
+      to_email: user.email,
+      to_name: user.name,
+      login_time: loginTime,
+      message: `Has iniciado sesión en SPACEBOOK a las ${loginTime}.`
+    };
+
+    emailjs.send(environment.emailjs.serviceId, environment.emailjs.templateLoginId, templateParams, environment.emailjs.publicKey)
+      .then((response) => {
+        console.log('Email de login enviado:', response);
+      })
+      .catch((error) => {
+        console.error('Error enviando email de login:', error);
+      });
   }
 }

@@ -57,9 +57,9 @@ export class LoginPage implements OnInit {
   }
 
   ngOnInit() {
-    // Si ya está autenticado, redirigir a home
+    // Si ya está autenticado, redirigir a dashboard
     if (this.authService.isAuthenticated()) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/dashboard']);
     }
   }
 
@@ -102,8 +102,8 @@ export class LoginPage implements OnInit {
         this.toastService.showSuccessToast(`¡Bienvenido, ${result.user?.name}!`);
         // Limpiar formulario
         this.clearForm();
-        // Redirigir a home
-        this.router.navigate(['/home']);
+        // Redirigir a dashboard
+        this.router.navigate(['/dashboard']);
       } else {
         this.toastService.showErrorToast(result.message);
       }

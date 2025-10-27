@@ -1,0 +1,128 @@
+:host {
+  ion-menu {
+    --background: #212121;
+    --color: #ffffff;
+    --width: 280px;
+  }
+
+  ion-header {
+    ion-toolbar {
+      --background: #212121;
+      --color: #ffffff;
+      border-bottom: 1px solid #333333;
+      display: flex; /* Asegura que el toolbar es un contenedor flex */
+      align-items: center;
+      justify-content: space-between; /* Distribuye el espacio entre los elementos */
+
+      ion-title {
+        font-weight: bold;
+        font-size: 1.2em;
+        display: flex; /* Habilitado para usar flexbox */
+        align-items: center; /* Centra verticalmente */
+        justify-content: center; /* Centra horizontalmente */
+        height: 100%;
+        padding: 0;
+        flex-grow: 1; /* Permite que ion-title ocupe el espacio disponible */
+
+        .sidebar-logo {
+          height: 150px;
+          width: auto;
+          display: block; /* Asegura que la imagen se comporte como un bloque para margin: auto */
+          margin: 0 auto; /* Centra la imagen horizontalmente */
+        }
+      }
+
+      ion-buttons {
+        height: 100%;
+        display: flex;
+        align-items: center;
+
+        ion-icon {
+          font-size: 1.5em;
+          color: #ffffff;
+        }
+      }
+    }
+  }
+
+  ion-content {
+    --background: #212121;
+    --color: #ffffff;
+
+    ion-list {
+      background: transparent;
+      padding: 0;
+
+      ion-list-header {
+        color: #a0a0a0;
+        font-weight: bold;
+        text-transform: uppercase;
+        margin-top: 20px;
+        padding-left: 16px;
+      }
+
+      ion-item {
+        --background: #212121;
+        --color: #ffffff;
+        --padding-start: 16px;
+        --inner-padding-end: 16px;
+        border-radius: 8px;
+        margin: 4px 8px;
+
+        &.selected {
+          --background: #3a3a3a;
+          color: #ffd700; // Color amarillo para el texto del elemento seleccionado
+
+          ion-icon {
+            color: #ffd700; // Color amarillo para el icono del elemento seleccionado
+          }
+        }
+
+        ion-icon {
+          color: #a0a0a0;
+          margin-right: 10px;
+        }
+
+        ion-label {
+          font-weight: 500;
+        }
+      }
+    }
+
+    #user-info-list {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      border-top: 1px solid #333333;
+      padding-top: 10px;
+
+      ion-item {
+        --background: #3a3a3a;
+        margin: 0 8px 10px 8px;
+        border-radius: 8px;
+        padding: 10px;
+
+        ion-icon[slot="start"] {
+          font-size: 2.5em;
+          color: #ffd700;
+        }
+
+        ion-label {
+          strong {
+            color: #ffffff;
+            font-size: 1.1em;
+          }
+          p {
+            color: #a0a0a0;
+            font-size: 0.9em;
+            margin-top: 2px;
+          }
+        }
+
+        ion-icon[slot="end"] {
+          color: #a0a0a0;
+        }
+      }
+    }
+  }
+}
