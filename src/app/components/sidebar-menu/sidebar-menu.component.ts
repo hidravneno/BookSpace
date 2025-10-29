@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { 
-  IonMenu, 
   IonHeader, 
   IonToolbar, 
   IonTitle, 
@@ -10,9 +9,9 @@ import {
   IonList, 
   IonItem, 
   IonLabel, 
-  IonIcon
+  IonIcon,
+  MenuController
 } from '@ionic/angular/standalone';
-import { MenuController } from '@ionic/angular/standalone'; // Import MenuController
 import { addIcons } from 'ionicons';
 import { homeOutline, calendarOutline, walletOutline, personOutline, notificationsOutline, logOutOutline, businessOutline, addCircleOutline } from 'ionicons/icons'; // Add new icons
 import { AuthService } from '../../services/auth.service'; // Import AuthService
@@ -25,7 +24,6 @@ import { AuthService } from '../../services/auth.service'; // Import AuthService
   imports: [
     CommonModule,
     RouterModule, // Add RouterModule
-    IonMenu,
     IonHeader,
     IonToolbar,
     IonTitle,
@@ -50,9 +48,7 @@ export class SidebarMenuComponent implements OnInit {
   public catalogManagement: any[] = []; // Remove old menu items
   public storeManagement: any[] = []; // Remove old menu items
 
-  menuType: string = 'push';
-
-  constructor(private router: Router, private activatedRoute: ActivatedRoute, private menu: MenuController, private authService: AuthService) { // Inject MenuController and AuthService
+  constructor(private router: Router, private activatedRoute: ActivatedRoute, private authService: AuthService, private menuController: MenuController) { // Inject AuthService
     addIcons({ 
       homeOutline, 
       businessOutline, 
@@ -66,21 +62,10 @@ export class SidebarMenuComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.updateMenuType();
-    this.menu.enable(true);
-    if (this.menuType === 'push') {
-      this.menu.open();
-    }
-  }
-
-  private updateMenuType() {
-    this.menuType = window.innerWidth >= 768 ? 'push' : 'overlay';
   }
 
   onItemClick() {
-    if (this.menuType === 'overlay') {
-      this.menu.close();
-    }
+    this.menuController.close('main');
   }
 
   goToDashboard() {

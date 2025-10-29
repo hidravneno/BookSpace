@@ -1,11 +1,13 @@
 :host {
-  ion-menu {
-    --background: #212121;
-    --color: #ffffff;
-    --width: 280px;
-  }
+  width: 100%;
+  height: 100%;
+  background: #212121;
+  display: flex;
+  flex-direction: column;
 
   ion-header {
+    flex-shrink: 0;
+
     ion-toolbar {
       --background: #212121;
       --color: #ffffff;
@@ -48,6 +50,7 @@
   ion-content {
     --background: #212121;
     --color: #ffffff;
+    flex: 1;
 
     ion-list {
       background: transparent;

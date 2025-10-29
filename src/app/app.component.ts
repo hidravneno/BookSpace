@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IonApp, IonRouterOutlet } from '@ionic/angular/standalone';
+import { IonApp, IonRouterOutlet, IonSplitPane, IonMenu } from '@ionic/angular/standalone';
 import { SidebarMenuComponent } from './components/sidebar-menu/sidebar-menu.component';
 import { AuthService } from './services/auth.service';
 import { Subscription } from 'rxjs';
@@ -9,7 +9,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-root',
   templateUrl: 'app.component.html',
   standalone: true,
-  imports: [CommonModule, IonApp, IonRouterOutlet, SidebarMenuComponent],
+  imports: [CommonModule, IonApp, IonRouterOutlet, IonSplitPane, IonMenu, SidebarMenuComponent],
 })
 export class AppComponent implements OnInit, OnDestroy {
   isLoggedIn = false;

@@ -1,25 +1,23 @@
-<ion-menu contentId="main-content" [type]="menuType">
-  <ion-header>
-    <ion-toolbar>
-      <ion-title>
-        <img src="/assets/icon/LOGO.png" alt="Deep Panel Logo" class="sidebar-logo" (click)="goToDashboard()">
-      </ion-title>
-    </ion-toolbar>
-  </ion-header>
-  <ion-content>
-    <ion-list id="inbox-list">
-      <ion-item 
-        *ngFor="let p of appPages; let i = index"
-        routerDirection="root" 
-        [routerLink]="p.url !== '/logout' ? [p.url] : null" 
-        (click)="onItemClick(); p.handler && p.handler()" 
-        lines="none" 
-        detail="false" 
-        [class.selected]="isPageActive(p.url)"
-      >
-        <ion-icon aria-hidden="true" slot="start" [name]="p.icon"></ion-icon>
-        <ion-label>{{ p.title }}</ion-label>
-      </ion-item>
-    </ion-list>
-  </ion-content>
-</ion-menu>
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      <img src="/assets/icon/LOGO.png" alt="Deep Panel Logo" class="sidebar-logo" (click)="goToDashboard()">
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list id="inbox-list">
+    <ion-item 
+      *ngFor="let p of appPages; let i = index"
+      routerDirection="root" 
+      [routerLink]="p.url !== '/logout' ? [p.url] : null" 
+      (click)="p.handler && p.handler(); onItemClick()" 
+      lines="none" 
+      detail="false" 
+      [class.selected]="isPageActive(p.url)"
+    >
+      <ion-icon aria-hidden="true" slot="start" [name]="p.icon"></ion-icon>
+      <ion-label>{{ p.title }}</ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
