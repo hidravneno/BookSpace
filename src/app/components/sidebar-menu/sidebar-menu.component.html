@@ -9,9 +9,7 @@
   <ion-list id="inbox-list">
     <ion-item 
       *ngFor="let p of appPages; let i = index"
-      routerDirection="root" 
-      [routerLink]="p.url !== '/logout' ? [p.url] : null" 
-      (click)="p.handler && p.handler(); onItemClick()" 
+      (click)="onItemClick(p)" 
       lines="none" 
       detail="false" 
       [class.selected]="isPageActive(p.url)"

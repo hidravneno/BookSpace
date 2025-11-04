@@ -8,6 +8,8 @@ export interface User {
   name: string;
   email: string;
   password: string;
+  phone?: string;
+  address?: string;
   createdAt: Date;
 }
 
@@ -15,6 +17,9 @@ export interface AuthUser {
   id: string;
   name: string;
   email: string;
+  phone?: string;
+  address?: string;
+  createdAt: Date;
 }
 
 @Injectable({
@@ -48,6 +53,8 @@ export class AuthService {
         name,
         email: email.toLowerCase(),
         password, // En producción, esto debería estar hasheado
+        phone: '',
+        address: '',
         createdAt: new Date()
       };
 
@@ -58,7 +65,10 @@ export class AuthService {
       const authUser: AuthUser = {
         id: newUser.id,
         name: newUser.name,
-        email: newUser.email
+        email: newUser.email,
+        phone: newUser.phone,
+        address: newUser.address,
+        createdAt: newUser.createdAt
       };
 
       // Enviar email de registro
@@ -90,7 +100,10 @@ export class AuthService {
       const authUser: AuthUser = {
         id: user.id,
         name: user.name,
-        email: user.email
+        email: user.email,
+        phone: user.phone,
+        address: user.address,
+        createdAt: user.createdAt
       };
 
       // Guardar sesión actual
@@ -129,6 +142,31 @@ export class AuthService {
    */
   getCurrentUser(): AuthUser | null {
     return this.currentUserSubject.value;
+  }
+
+  /**
+   * Actualiza el perfil del usuario
+   */
+  updateProfile(userId: string, updates: Partial<Pick<User, 'name' | 'email' | 'phone' | 'address'>>): boolean {
+    const users = this.getUsers();
+    const userIndex = users.findIndex(u => u.id === userId);
+    if (userIndex === -1) return false;
+
+    // Actualizar usuario
+    users[userIndex] = { ...users[userIndex], ...updates };
+    localStorage.setItem(this.USERS_KEY, JSON.stringify(users));
+
+    // Actualizar usuario actual si es el mismo
+    const currentUser = this.getCurrentUser();
+    if (currentUser && currentUser.id === userId) {
+      const updatedAuthUser: AuthUser = {
+        ...currentUser,
+        ...updates,
+      };
+      this.setCurrentUser(updatedAuthUser);
+    }
+
+    return true;
   }
 
   /**
@@ -171,6 +209,10 @@ export class AuthService {
     const userJson = localStorage.getItem(this.CURRENT_USER_KEY);
     if (userJson) {
       const user = JSON.parse(userJson);
+      // Convertir createdAt de string a Date si es necesario
+      if (user.createdAt && typeof user.createdAt === 'string') {
+        user.createdAt = new Date(user.createdAt);
+      }
       this.currentUserSubject.next(user);
     }
   }
