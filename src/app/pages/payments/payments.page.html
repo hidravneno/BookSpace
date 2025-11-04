@@ -1,0 +1,64 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start" *ngIf="isMobile">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Pagos / Ingresos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Pagos / Ingresos</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Historial de Pagos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Aquí se mostrarán los pagos realizados y los ingresos generados.</p>
+      <ion-list>
+        <ion-item>
+          <ion-label>Pago por reserva #1234 - $50.00</ion-label>
+          <ion-badge color="success">Completado</ion-badge>
+        </ion-item>
+        <ion-item>
+          <ion-label>Ingreso por espacio ABC - $100.00</ion-label>
+          <ion-badge color="primary">Recibido</ion-badge>
+        </ion-item>
+        <ion-item>
+          <ion-label>Pago por reserva #5678 - $75.00</ion-label>
+          <ion-badge color="warning">Pendiente</ion-badge>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Resumen Financiero</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <p>Total de ingresos: $225.00</p>
+      <p>Total de pagos: $125.00</p>
+      <p>Balance: $100.00</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Gráfico de Ingresos vs Pagos</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <canvas baseChart
+              [data]="barChartData"
+              [options]="barChartOptions"
+              [type]="barChartType">
+      </canvas>
+    </ion-card-content>
+  </ion-card>
+
+</ion-content>

@@ -13,4 +13,34 @@
       <ion-title size="large">my-spaces</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <!-- Lista de Espacios -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Mis Espacios</ion-card-title>
+      <ion-card-subtitle>Gestiona tus espacios registrados</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let space of spaces">
+          <ion-icon [name]="space.icon" slot="start" size="large" color="primary"></ion-icon>
+          <ion-label>
+            <h2>{{ space.name }}</h2>
+            <p>Capacidad: {{ space.capacity }} personas</p>
+            <p>Precio por hora: ${{ space.pricePerHour }}</p>
+          </ion-label>
+          <ion-button fill="clear" slot="end">
+            <ion-icon name="ellipsis-vertical"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Botón para agregar nuevo espacio -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="goToRegisterSpace()">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

@@ -64,7 +64,12 @@ export class SidebarMenuComponent implements OnInit {
   ngOnInit() {
   }
 
-  onItemClick() {
+  onItemClick(page: any) {
+    if (page.handler) {
+      page.handler();
+    } else {
+      this.router.navigate([page.url]);
+    }
     this.menuController.close('main');
   }
 

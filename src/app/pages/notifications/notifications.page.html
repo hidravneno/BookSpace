@@ -1,0 +1,35 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Notificaciones</ion-title>
+    <ion-badge slot="end" color="danger" *ngIf="getUnreadCount() > 0">{{ getUnreadCount() }}</ion-badge>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Notificaciones</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <ion-list *ngIf="notifications.length > 0">
+    <ion-item *ngFor="let notification of notifications" (click)="markAsRead(notification)" [class.read]="notification.read">
+      <ion-icon [name]="getIconName(notification.type)" [color]="getIconColor(notification.type)" slot="start"></ion-icon>
+      <ion-label>
+        <h3>{{ notification.title }}</h3>
+        <p>{{ notification.message }}</p>
+        <p class="date">{{ notification.date | date:'dd/MM/yyyy HH:mm' }}</p>
+      </ion-label>
+      <ion-badge *ngIf="!notification.read" color="danger" slot="end">Nuevo</ion-badge>
+    </ion-item>
+  </ion-list>
+
+  <div class="no-notifications" *ngIf="notifications.length === 0">
+    <ion-icon name="notifications-outline" size="large" color="medium"></ion-icon>
+    <h3>No hay notificaciones</h3>
+    <p>Todas tus notificaciones aparecerán aquí</p>
+  </div>
+</ion-content>
