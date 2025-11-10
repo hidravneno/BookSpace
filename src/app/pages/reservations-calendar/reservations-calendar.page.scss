@@ -1,3 +1,283 @@
-.calendar-container {
-  padding: 16px;
+// Cards
+ion-card {
+  margin: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-card-header {
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 600;
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+
+    ion-card-subtitle {
+      margin-top: 4px;
+      font-size: 13px;
+    }
+  }
+}
+
+// Filter Card
+.filter-card {
+  ion-card-content {
+    padding: 12px 16px;
+  }
+
+  .filter-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    ion-icon {
+      font-size: 24px;
+      min-width: 24px;
+    }
+
+    ion-select {
+      flex: 1;
+      --padding-start: 0;
+    }
+  }
+}
+
+// Calendar Container
+.calendar-card {
+  .calendar-container {
+    padding: 0;
+    
+    // Estilos para FullCalendar
+    ::ng-deep {
+      .fc {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+        .fc-toolbar {
+          margin-bottom: 16px;
+          
+          .fc-toolbar-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--ion-color-dark);
+          }
+
+          .fc-button {
+            background-color: var(--ion-color-primary);
+            border-color: var(--ion-color-primary);
+            text-transform: capitalize;
+            padding: 6px 12px;
+            font-size: 14px;
+
+            &:hover {
+              background-color: var(--ion-color-primary-shade);
+            }
+
+            &.fc-button-active {
+              background-color: var(--ion-color-primary-shade);
+            }
+          }
+        }
+
+        .fc-daygrid-day {
+          &:hover {
+            background-color: var(--ion-color-light-tint);
+            cursor: pointer;
+          }
+        }
+
+        .fc-event {
+          cursor: pointer;
+          padding: 2px 4px;
+          border-radius: 4px;
+          font-size: 12px;
+          
+          &:hover {
+            opacity: 0.8;
+          }
+        }
+
+        .fc-daygrid-day-number {
+          color: var(--ion-color-dark);
+          padding: 4px;
+        }
+
+        .fc-col-header-cell {
+          background-color: var(--ion-color-light);
+          font-weight: 600;
+          text-transform: uppercase;
+          font-size: 11px;
+          padding: 8px 4px;
+        }
+      }
+    }
+  }
+}
+
+// Reservations List
+ion-list {
+  padding: 0;
+
+  .reservation-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-bottom: 16px;
+    border-left: 4px solid var(--ion-color-primary);
+    background-color: var(--ion-color-light-tint);
+    border-radius: 8px;
+    padding: 12px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.reservation-content {
+  width: 100%;
+
+  .reservation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+
+    h3 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 0;
+      color: var(--ion-color-dark);
+    }
+
+    ion-badge {
+      font-size: 11px;
+      padding: 4px 8px;
+    }
+  }
+
+  .reservation-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--ion-color-dark);
+
+      ion-icon {
+        font-size: 18px;
+        min-width: 18px;
+        margin-top: 2px;
+      }
+
+      span {
+        flex: 1;
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+// Loading State
+.loading-container {
+  text-align: center;
+  padding: 40px 20px;
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+// Empty State
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  ion-icon {
+    font-size: 80px;
+    margin-bottom: 16px;
+    opacity: 0.3;
+  }
+
+  h2 {
+    color: var(--ion-color-dark);
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+    margin: 0;
+  }
+}
+
+// Legend Card
+.legend-card {
+  .legend-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    ion-chip {
+      margin: 0;
+
+      ion-icon {
+        margin-right: 4px;
+      }
+
+      ion-label {
+        font-size: 12px;
+        font-weight: 500;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (min-width: 768px) {
+  ion-card {
+    margin: 20px;
+  }
+
+  .reservation-content {
+    .reservation-details {
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      .detail-row {
+        min-width: 45%;
+      }
+    }
+  }
+
+  .legend-container {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 1024px) {
+  ion-content {
+    --padding-start: 20px;
+    --padding-end: 20px;
+  }
+
+  ion-card {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

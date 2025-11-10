@@ -1,7 +1,220 @@
+// Form Items
 ion-item {
   margin-bottom: 16px;
+  --padding-start: 0;
+  --inner-padding-end: 0;
+
+  &.ion-invalid {
+    --border-color: var(--ion-color-danger);
+    --highlight-color-focused: var(--ion-color-danger);
+  }
 }
 
 ion-card {
-  margin-bottom: 20px;
+  margin: 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+// Form Labels
+ion-label {
+  font-weight: 500;
+  color: var(--ion-color-dark);
+  margin-bottom: 8px;
+
+  .optional {
+    color: var(--ion-color-medium);
+    font-size: 12px;
+    font-weight: normal;
+  }
+}
+
+// Error Notes
+ion-note {
+  font-size: 12px;
+  margin-top: 4px;
+  padding-left: 4px;
+}
+
+// Inputs
+ion-input,
+ion-textarea,
+ion-select {
+  --padding-start: 12px;
+  --padding-end: 12px;
+  margin-top: 4px;
+}
+
+ion-textarea {
+  margin-top: 8px;
+  border: 1px solid var(--ion-color-light);
+  border-radius: 8px;
+}
+
+// Amenidades Section
+.amenities-section {
+  margin: 24px 0;
+  padding: 16px;
+  background-color: var(--ion-color-light-tint);
+  border-radius: 8px;
+
+  .section-label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: var(--ion-color-dark);
+    margin-bottom: 12px;
+  }
+
+  .amenities-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+
+    @media (min-width: 768px) {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .amenity-item {
+      --background: transparent;
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      margin-bottom: 0;
+
+      ion-checkbox {
+        margin-right: 8px;
+      }
+
+      ion-label {
+        font-size: 14px;
+        font-weight: normal;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// Action Buttons
+.action-buttons {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  ion-button {
+    --border-radius: 8px;
+    font-weight: 600;
+    text-transform: none;
+    height: 48px;
+
+    ion-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+// Examples Section
+ion-card {
+  ion-card-header {
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+
+      ion-icon {
+        font-size: 24px;
+      }
+    }
+
+    ion-card-subtitle {
+      margin-top: 4px;
+      font-size: 13px;
+    }
+  }
+
+  ion-list {
+    padding: 0;
+
+    ion-item {
+      --padding-start: 0;
+      --inner-padding-end: 0;
+      margin-bottom: 12px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      ion-icon {
+        font-size: 28px;
+        margin-right: 12px;
+      }
+
+      ion-label {
+        h2 {
+          font-weight: 600;
+          font-size: 16px;
+          margin-bottom: 4px;
+          color: var(--ion-color-dark);
+        }
+
+        p {
+          font-size: 13px;
+          color: var(--ion-color-medium);
+          margin: 2px 0;
+          line-height: 1.4;
+
+          &.small-text {
+            font-size: 12px;
+            font-style: italic;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (min-width: 768px) {
+  ion-card {
+    margin: 20px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .action-buttons {
+    flex-direction: row;
+
+    ion-button {
+      flex: 1;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  ion-content {
+    --padding-start: 20px;
+    --padding-end: 20px;
+  }
+
+  ion-card {
+    max-width: 1000px;
+  }
+}
+
+// Form Validation States
+.ion-invalid {
+  ion-input,
+  ion-select,
+  ion-textarea {
+    --border-color: var(--ion-color-danger);
+  }
+}
+
+// Disabled State
+ion-button[disabled] {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

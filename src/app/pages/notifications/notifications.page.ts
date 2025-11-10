@@ -1,100 +1,342 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList, IonItem, IonLabel, IonBadge, IonIcon } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList, IonItem, IonLabel, IonBadge, IonIcon, IonButton, IonChip, IonSegment, IonSegmentButton, IonRefresher, IonRefresherContent, IonSpinner, AlertController, ActionSheetController, ModalController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { notificationsOutline, checkmarkCircleOutline, warningOutline, informationCircleOutline } from 'ionicons/icons';
-
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error';
-  date: Date;
-  read: boolean;
-}
+import { notificationsOutline, checkmarkCircleOutline, warningOutline, informationCircleOutline, cashOutline, calendarOutline, alertCircleOutline, checkmarkDoneOutline, trashOutline, ellipsisVertical, filterOutline, closeOutline, timeOutline, linkOutline, arrowForwardOutline } from 'ionicons/icons';
+import { DashboardService } from '../../services/dashboard.service';
+import { AuthService } from '../../services/auth.service';
+import { Notification } from '../../models/dashboard.models';
+import { Router } from '@angular/router';
+import { NotificationDetailModalComponent } from './notification-detail-modal.component';
 
 @Component({
   selector: 'app-notifications',
   templateUrl: './notifications.page.html',
   styleUrls: ['./notifications.page.scss'],
   standalone: true,
-  imports: [IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, CommonModule, FormsModule, IonList, IonItem, IonLabel, IonBadge, IonIcon]
+  imports: [
+    IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, 
+    IonList, IonItem, IonLabel, IonBadge, IonIcon, IonButton, IonChip,
+    IonSegment, IonSegmentButton, IonRefresher, IonRefresherContent, IonSpinner,
+    CommonModule, FormsModule
+  ]
 })
 export class NotificationsPage implements OnInit {
 
   notifications: Notification[] = [];
+  filteredNotifications: Notification[] = [];
+  selectedFilter: 'all' | 'unread' | 'read' = 'all';
+  isLoading = true;
 
-  constructor() {
-    addIcons({ notificationsOutline, checkmarkCircleOutline, warningOutline, informationCircleOutline });
+  constructor(
+    private dashboardService: DashboardService,
+    private authService: AuthService,
+    private alertController: AlertController,
+    private actionSheetController: ActionSheetController,
+    private modalController: ModalController,
+    private router: Router
+  ) {
+    addIcons({ 
+      notificationsOutline, checkmarkCircleOutline, warningOutline, 
+      informationCircleOutline, cashOutline, calendarOutline, 
+      alertCircleOutline, checkmarkDoneOutline, trashOutline, 
+      ellipsisVertical, filterOutline, closeOutline, timeOutline,
+      linkOutline, arrowForwardOutline 
+    });
   }
 
   ngOnInit() {
     this.loadNotifications();
   }
 
-  private loadNotifications() {
-    // Sample notifications - in a real app, this would come from a service
-    this.notifications = [
-      {
-        id: '1',
-        title: 'Nueva reserva confirmada',
-        message: 'Se ha confirmado una reserva para la Sala de Reuniones A el 30 de octubre a las 10:00 AM',
-        type: 'success',
-        date: new Date('2025-10-29T10:00:00'),
-        read: false
-      },
-      {
-        id: '2',
-        title: 'Pago recibido',
-        message: 'Has recibido un pago de $150 por la reserva de Oficina B1',
-        type: 'info',
-        date: new Date('2025-10-28T15:30:00'),
-        read: false
-      },
-      {
-        id: '3',
-        title: 'Mantenimiento programado',
-        message: 'Recordatorio: Mantenimiento del sistema el 31 de octubre de 2:00 AM a 4:00 AM',
-        type: 'warning',
-        date: new Date('2025-10-27T09:00:00'),
-        read: true
-      },
-      {
-        id: '4',
-        title: 'Reserva cancelada',
-        message: 'La reserva para Conferencia Room fue cancelada por el cliente',
-        type: 'warning',
-        date: new Date('2025-10-26T14:20:00'),
-        read: true
-      }
-    ];
+  loadNotifications() {
+    this.isLoading = true;
+    const currentUser = this.authService.getCurrentUser();
+    
+    if (currentUser) {
+      this.dashboardService.getUserNotifications(currentUser.id).subscribe({
+        next: (notifications) => {
+          this.notifications = notifications;
+          this.applyFilter();
+          this.isLoading = false;
+        },
+        error: (error) => {
+          console.error('Error loading notifications:', error);
+          this.isLoading = false;
+        }
+      });
+    } else {
+      this.isLoading = false;
+    }
+  }
+
+  applyFilter() {
+    switch (this.selectedFilter) {
+      case 'unread':
+        this.filteredNotifications = this.notifications.filter(n => !n.read);
+        break;
+      case 'read':
+        this.filteredNotifications = this.notifications.filter(n => n.read);
+        break;
+      default:
+        this.filteredNotifications = [...this.notifications];
+    }
+  }
+
+  onFilterChange(event: any) {
+    this.selectedFilter = event.detail.value;
+    this.applyFilter();
+  }
+
+  handleRefresh(event: any) {
+    this.loadNotifications();
+    setTimeout(() => {
+      event.target.complete();
+    }, 1000);
   }
 
   getIconName(type: string): string {
     switch (type) {
-      case 'success': return 'checkmark-circle-outline';
-      case 'warning': return 'warning-outline';
-      case 'error': return 'warning-outline';
-      default: return 'information-circle-outline';
+      case 'reservation':
+        return 'calendar-outline';
+      case 'payment':
+        return 'cash-outline';
+      case 'cancellation':
+        return 'alert-circle-outline';
+      case 'reminder':
+        return 'information-circle-outline';
+      case 'system':
+        return 'notifications-outline';
+      case 'update':
+        return 'checkmark-circle-outline';
+      default:
+        return 'information-circle-outline';
     }
   }
 
-  getIconColor(type: string): string {
+  getIconColor(notification: Notification): string {
+    if (!notification.read) {
+      switch (notification.priority) {
+        case 'high':
+          return 'danger';
+        case 'medium':
+          return 'warning';
+        default:
+          return 'primary';
+      }
+    }
+    return 'medium';
+  }
+
+  getPriorityColor(priority: string): string {
+    switch (priority) {
+      case 'high':
+        return 'danger';
+      case 'medium':
+        return 'warning';
+      default:
+        return 'success';
+    }
+  }
+
+  getPriorityText(priority: string): string {
+    switch (priority) {
+      case 'high':
+        return 'Alta';
+      case 'medium':
+        return 'Media';
+      default:
+        return 'Baja';
+    }
+  }
+
+  async markAsRead(notification: Notification) {
+    // Abrir modal con detalles
+    await this.openNotificationDetail(notification);
+
+    // Marcar como leída si no lo está
+    if (!notification.read) {
+      const success = this.dashboardService.markNotificationAsRead(notification.id);
+      if (success) {
+        notification.read = true;
+        notification.readAt = new Date();
+        this.applyFilter();
+      }
+    }
+  }
+
+  async openNotificationDetail(notification: Notification) {
+    const modal = await this.modalController.create({
+      component: NotificationDetailModalComponent,
+      componentProps: {
+        notification: notification
+      }
+    });
+
+    await modal.present();
+
+    const { data } = await modal.onWillDismiss();
+    if (data) {
+      if (data.action === 'navigate') {
+        this.navigateFromNotification(data.notification);
+      } else if (data.action === 'delete') {
+        this.deleteNotification(data.notification);
+      }
+    }
+  }
+
+  getTypeText(type: string): string {
     switch (type) {
-      case 'success': return 'success';
-      case 'warning': return 'warning';
-      case 'error': return 'danger';
-      default: return 'primary';
+      case 'reservation':
+        return 'Reserva';
+      case 'payment':
+        return 'Pago';
+      case 'cancellation':
+        return 'Cancelación';
+      case 'reminder':
+        return 'Recordatorio';
+      case 'system':
+        return 'Sistema';
+      case 'update':
+        return 'Actualización';
+      default:
+        return 'Notificación';
     }
   }
 
-  markAsRead(notification: Notification) {
-    notification.read = true;
+  formatDate(date: Date): string {
+    return date.toLocaleDateString('es-MX', { 
+      weekday: 'long',
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  async navigateFromNotification(notification: Notification) {
+    
+    // Navegar según el tipo de notificación
+    if (notification.actionUrl) {
+      await this.router.navigate([notification.actionUrl]);
+    } else if (notification.relatedId) {
+      // Determinar la ruta según el tipo
+      switch (notification.type) {
+        case 'reservation':
+          await this.router.navigate(['/reservations-calendar']);
+          break;
+        case 'payment':
+          await this.router.navigate(['/payments']);
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  async markAllAsRead() {
+    const currentUser = this.authService.getCurrentUser();
+    if (!currentUser) return;
+
+    const alert = await this.alertController.create({
+      header: 'Marcar todas como leídas',
+      message: '¿Deseas marcar todas las notificaciones como leídas?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Confirmar',
+          handler: () => {
+            const success = this.dashboardService.markAllNotificationsAsRead(currentUser.id);
+            if (success) {
+              this.loadNotifications();
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
+  }
+
+  async showNotificationOptions(notification: Notification) {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Opciones',
+      buttons: [
+        {
+          text: notification.read ? 'Marcar como no leída' : 'Marcar como leída',
+          icon: 'checkmark-circle-outline',
+          handler: () => {
+            if (!notification.read) {
+              this.markAsRead(notification);
+            }
+          }
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          icon: 'trash-outline',
+          handler: () => {
+            this.deleteNotification(notification);
+          }
+        },
+        {
+          text: 'Cancelar',
+          role: 'cancel',
+          icon: 'close'
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+
+  async deleteNotification(notification: Notification) {
+    const alert = await this.alertController.create({
+      header: 'Eliminar Notificación',
+      message: '¿Estás seguro de que deseas eliminar esta notificación?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            const success = this.dashboardService.deleteNotification(notification.id);
+            if (success) {
+              this.loadNotifications();
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   getUnreadCount(): number {
     return this.notifications.filter(n => !n.read).length;
+  }
+
+  getRelativeTime(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Ahora';
+    if (diffMins < 60) return `Hace ${diffMins} min`;
+    if (diffHours < 24) return `Hace ${diffHours}h`;
+    if (diffDays < 7) return `Hace ${diffDays}d`;
+    
+    return date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' });
   }
 
 }

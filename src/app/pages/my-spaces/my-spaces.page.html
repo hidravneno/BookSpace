@@ -3,42 +3,104 @@
     <ion-buttons slot="start" *ngIf="isMobile">
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
-    <ion-title>My Spaces</ion-title>
+    <ion-title>Mis Espacios</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">my-spaces</ion-title>
+      <ion-title size="large">Mis Espacios</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <!-- Lista de Espacios -->
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Mis Espacios</ion-card-title>
-      <ion-card-subtitle>Gestiona tus espacios registrados</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <ion-list>
-        <ion-item *ngFor="let space of spaces">
-          <ion-icon [name]="space.icon" slot="start" size="large" color="primary"></ion-icon>
-          <ion-label>
-            <h2>{{ space.name }}</h2>
-            <p>Capacidad: {{ space.capacity }} personas</p>
-            <p>Precio por hora: ${{ space.pricePerHour }}</p>
-          </ion-label>
-          <ion-button fill="clear" slot="end">
-            <ion-icon name="ellipsis-vertical"></ion-icon>
-          </ion-button>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
+  <!-- Estado de carga -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando espacios...</p>
+  </div>
 
-  <!-- Botón para agregar nuevo espacio -->
-  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+  <!-- Lista de Espacios -->
+  <div *ngIf="!isLoading">
+    <!-- Cuando hay espacios -->
+    <div *ngIf="spaces.length > 0">
+      <ion-card *ngFor="let space of spaces" class="space-card">
+        <ion-card-header>
+          <div class="space-header">
+            <div class="space-info">
+              <ion-icon [name]="getSpaceIcon(space.type)" color="primary" class="space-icon"></ion-icon>
+              <div>
+                <ion-card-title>{{ space.name }}</ion-card-title>
+                <ion-card-subtitle>{{ space.type | titlecase }}</ion-card-subtitle>
+              </div>
+            </div>
+            <ion-button fill="clear" (click)="showSpaceOptions(space)">
+              <ion-icon name="ellipsis-vertical"></ion-icon>
+            </ion-button>
+          </div>
+        </ion-card-header>
+        
+        <ion-card-content>
+          <div class="space-details">
+            <div class="detail-item">
+              <ion-icon name="people-outline" color="medium"></ion-icon>
+              <span>{{ space.capacity }} personas</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="cash-outline" color="medium"></ion-icon>
+              <span>{{ formatPrice(space.pricePerHour) }}/hora</span>
+            </div>
+            <div class="detail-item" *ngIf="space.pricePerDay">
+              <ion-icon name="calendar-outline" color="medium"></ion-icon>
+              <span>{{ formatPrice(space.pricePerDay) }}/día</span>
+            </div>
+            <div class="detail-item">
+              <ion-icon name="location-outline" color="medium"></ion-icon>
+              <span>{{ space.city }}</span>
+            </div>
+          </div>
+
+          <!-- Amenidades -->
+          <div class="amenities" *ngIf="space.amenities && space.amenities.length > 0">
+            <p class="amenities-title">Amenidades:</p>
+            <div class="amenities-list">
+              <span class="amenity-chip" *ngFor="let amenity of space.amenities.slice(0, 3)">
+                {{ amenity }}
+              </span>
+              <span class="amenity-chip" *ngIf="space.amenities.length > 3">
+                +{{ space.amenities.length - 3 }} más
+              </span>
+            </div>
+          </div>
+
+          <!-- Estado del espacio -->
+          <div class="space-status">
+            <ion-icon 
+              [name]="space.isActive ? 'checkmark-circle' : 'close-circle'" 
+              [color]="space.isActive ? 'success' : 'danger'">
+            </ion-icon>
+            <span [class.active]="space.isActive" [class.inactive]="!space.isActive">
+              {{ space.isActive ? 'Activo' : 'Inactivo' }}
+            </span>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <!-- Cuando no hay espacios -->
+    <div *ngIf="spaces.length === 0" class="empty-state">
+      <ion-icon name="business-outline" color="medium"></ion-icon>
+      <h2>No tienes espacios registrados</h2>
+      <p>Comienza registrando tu primer espacio</p>
+      <ion-button (click)="goToRegisterSpace()" color="primary">
+        <ion-icon name="add" slot="start"></ion-icon>
+        Registrar Espacio
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Botón flotante para agregar nuevo espacio -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="spaces.length > 0">
     <ion-fab-button (click)="goToRegisterSpace()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>

@@ -4,7 +4,9 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>Notificaciones</ion-title>
-    <ion-badge slot="end" color="danger" *ngIf="getUnreadCount() > 0">{{ getUnreadCount() }}</ion-badge>
+    <ion-chip slot="end" color="danger" *ngIf="getUnreadCount() > 0">
+      <ion-label>{{ getUnreadCount() }}</ion-label>
+    </ion-chip>
   </ion-toolbar>
 </ion-header>
 
@@ -15,21 +17,98 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-list *ngIf="notifications.length > 0">
-    <ion-item *ngFor="let notification of notifications" (click)="markAsRead(notification)" [class.read]="notification.read">
-      <ion-icon [name]="getIconName(notification.type)" [color]="getIconColor(notification.type)" slot="start"></ion-icon>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Filter and Actions -->
+  <div class="filter-container" *ngIf="notifications.length > 0">
+    <ion-segment [value]="selectedFilter" (ionChange)="onFilterChange($event)">
+      <ion-segment-button value="all">
+        <ion-label>Todas ({{ notifications.length }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="unread">
+        <ion-label>No leídas ({{ getUnreadCount() }})</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="read">
+        <ion-label>Leídas</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+
+    <ion-button 
+      fill="clear" 
+      size="small" 
+      (click)="markAllAsRead()" 
+      *ngIf="getUnreadCount() > 0"
+      class="mark-all-button">
+      <ion-icon name="checkmark-done-outline" slot="start"></ion-icon>
+      Marcar todas como leídas
+    </ion-button>
+  </div>
+
+  <!-- Notifications List -->
+  <ion-list *ngIf="filteredNotifications.length > 0" class="notifications-list">
+    <ion-item 
+      *ngFor="let notification of filteredNotifications" 
+      (click)="markAsRead(notification)" 
+      [class.unread]="!notification.read"
+      [class.read]="notification.read"
+      button>
+      <ion-icon 
+        [name]="getIconName(notification.type)" 
+        [color]="getIconColor(notification)" 
+        slot="start" 
+        class="notification-icon">
+      </ion-icon>
+      
       <ion-label>
-        <h3>{{ notification.title }}</h3>
-        <p>{{ notification.message }}</p>
-        <p class="date">{{ notification.date | date:'dd/MM/yyyy HH:mm' }}</p>
+        <div class="notification-header">
+          <h3>{{ notification.title }}</h3>
+          <ion-chip 
+            [color]="getPriorityColor(notification.priority)" 
+            class="priority-chip" 
+            *ngIf="!notification.read && notification.priority === 'high'">
+            <ion-label>{{ getPriorityText(notification.priority) }}</ion-label>
+          </ion-chip>
+        </div>
+        <p class="notification-message">{{ notification.message }}</p>
+        <div class="notification-footer">
+          <span class="notification-time">
+            <ion-icon name="time-outline"></ion-icon>
+            {{ getRelativeTime(notification.createdAt) }}
+          </span>
+          <ion-badge *ngIf="!notification.read" color="primary" class="unread-badge">
+            Nuevo
+          </ion-badge>
+        </div>
       </ion-label>
-      <ion-badge *ngIf="!notification.read" color="danger" slot="end">Nuevo</ion-badge>
+
+      <ion-button 
+        fill="clear" 
+        slot="end" 
+        (click)="showNotificationOptions(notification); $event.stopPropagation()">
+        <ion-icon name="ellipsis-vertical" color="medium"></ion-icon>
+      </ion-button>
     </ion-item>
   </ion-list>
 
-  <div class="no-notifications" *ngIf="notifications.length === 0">
-    <ion-icon name="notifications-outline" size="large" color="medium"></ion-icon>
-    <h3>No hay notificaciones</h3>
+  <!-- Empty State - No Notifications -->
+  <div class="empty-state" *ngIf="notifications.length === 0 && !isLoading">
+    <ion-icon name="notifications-outline"></ion-icon>
+    <h2>No hay notificaciones</h2>
     <p>Todas tus notificaciones aparecerán aquí</p>
+  </div>
+
+  <!-- Empty State - Filtered -->
+  <div class="empty-state" *ngIf="filteredNotifications.length === 0 && notifications.length > 0 && !isLoading">
+    <ion-icon name="filter-outline"></ion-icon>
+    <h2>No hay notificaciones {{ selectedFilter === 'unread' ? 'no leídas' : 'leídas' }}</h2>
+    <p>Cambia el filtro para ver otras notificaciones</p>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando notificaciones...</p>
   </div>
 </ion-content>

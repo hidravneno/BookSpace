@@ -14,9 +14,122 @@
     </ion-toolbar>
   </ion-header>
 
-  <!-- Contenido de tu página Calendario de Reservas -->
-  <div class="calendar-container">
-    <full-calendar [options]="calendarOptions"></full-calendar>
-  </div>
+  <!-- Filtro de Reservas -->
+  <ion-card class="filter-card">
+    <ion-card-content>
+      <div class="filter-container">
+        <ion-icon name="filter-outline" color="primary"></ion-icon>
+        <ion-select
+          [(ngModel)]="selectedFilter"
+          placeholder="Filtrar por estado"
+          interface="popover"
+          (ionChange)="onFilterChange($event)">
+          <ion-select-option value="all">Todas las Reservas</ion-select-option>
+          <ion-select-option value="confirmed">Confirmadas</ion-select-option>
+          <ion-select-option value="pending">Pendientes</ion-select-option>
+          <ion-select-option value="cancelled">Canceladas</ion-select-option>
+          <ion-select-option value="completed">Completadas</ion-select-option>
+        </ion-select>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Calendario -->
+  <ion-card class="calendar-card">
+    <ion-card-header>
+      <ion-card-title>
+        <ion-icon name="calendar-outline" color="primary"></ion-icon>
+        Calendario
+      </ion-card-title>
+      <ion-card-subtitle>{{ filteredReservations.length }} reserva(s)</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="calendar-container">
+        <full-calendar [options]="calendarOptions"></full-calendar>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Lista de Reservas -->
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Detalles de Reservas</ion-card-title>
+      <ion-card-subtitle>Información completa de tus reservas</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <!-- Estado de carga -->
+      <div *ngIf="isLoading" class="loading-container">
+        <p>Cargando reservas...</p>
+      </div>
+
+      <!-- Lista de reservas -->
+      <ion-list *ngIf="!isLoading && filteredReservations.length > 0">
+        <ion-item *ngFor="let reservation of filteredReservations" lines="full" class="reservation-item">
+          <div class="reservation-content">
+            <div class="reservation-header">
+              <h3>{{ reservation.spaceName }}</h3>
+              <ion-badge [color]="getStatusColor(reservation.status)">
+                {{ getStatusText(reservation.status) }}
+              </ion-badge>
+            </div>
+
+            <div class="reservation-details">
+              <div class="detail-row">
+                <ion-icon name="person-outline" color="medium"></ion-icon>
+                <span>{{ reservation.userName }}</span>
+              </div>
+              <div class="detail-row">
+                <ion-icon name="time-outline" color="medium"></ion-icon>
+                <span>{{ formatDateTime(reservation.startDate) }} - {{ formatDateTime(reservation.endDate) }}</span>
+              </div>
+              <div class="detail-row">
+                <ion-icon name="cash-outline" color="medium"></ion-icon>
+                <span>{{ formatAmount(reservation.totalAmount) }}</span>
+              </div>
+              <div class="detail-row" *ngIf="reservation.notes">
+                <ion-icon name="document-text-outline" color="medium"></ion-icon>
+                <span>{{ reservation.notes }}</span>
+              </div>
+            </div>
+          </div>
+        </ion-item>
+      </ion-list>
+
+      <!-- Sin reservas -->
+      <div *ngIf="!isLoading && filteredReservations.length === 0" class="empty-state">
+        <ion-icon name="calendar-outline" color="medium"></ion-icon>
+        <h2>No hay reservas</h2>
+        <p *ngIf="selectedFilter === 'all'">No tienes reservas registradas aún</p>
+        <p *ngIf="selectedFilter !== 'all'">No hay reservas con el estado "{{ getStatusText(selectedFilter) }}"</p>
+      </div>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Leyenda de colores -->
+  <ion-card class="legend-card">
+    <ion-card-header>
+      <ion-card-title>Leyenda</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <div class="legend-container">
+        <ion-chip color="success">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          <ion-label>Confirmada</ion-label>
+        </ion-chip>
+        <ion-chip color="warning">
+          <ion-icon name="time-outline"></ion-icon>
+          <ion-label>Pendiente</ion-label>
+        </ion-chip>
+        <ion-chip color="danger">
+          <ion-icon name="close-circle"></ion-icon>
+          <ion-label>Cancelada</ion-label>
+        </ion-chip>
+        <ion-chip color="medium">
+          <ion-icon name="checkmark-done-outline"></ion-icon>
+          <ion-label>Completada</ion-label>
+        </ion-chip>
+      </div>
+    </ion-card-content>
+  </ion-card>
 
 </ion-content>

@@ -15,61 +15,189 @@
   </ion-header>
 
   <div class="profile-container" *ngIf="currentUser">
-    <!-- User Info Card -->
-    <ion-card>
+    <!-- Profile Header -->
+    <div class="profile-header">
+      <div class="avatar-container">
+        <ion-avatar class="user-avatar">
+          <div class="avatar-initials">{{ getInitials() }}</div>
+        </ion-avatar>
+      </div>
+      <div class="user-info">
+        <h1>{{ currentUser.name }}</h1>
+        <p class="user-email">
+          <ion-icon name="mail-outline"></ion-icon>
+          {{ currentUser.email }}
+        </p>
+        <ion-chip color="primary" class="member-chip">
+          <ion-icon name="time-outline"></ion-icon>
+          <ion-label>Miembro desde hace {{ userStats.memberSince }}</ion-label>
+        </ion-chip>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <ion-card class="stats-card">
       <ion-card-header>
-        <ion-card-title>Información del Usuario</ion-card-title>
+        <ion-card-title>
+          <ion-icon name="trending-up-outline"></ion-icon>
+          Estadísticas
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6" size-md="3">
+              <div class="stat-item">
+                <ion-icon name="home-outline" color="primary"></ion-icon>
+                <div class="stat-value">{{ userStats.totalSpaces }}</div>
+                <div class="stat-label">Espacios</div>
+              </div>
+            </ion-col>
+            <ion-col size="6" size-md="3">
+              <div class="stat-item">
+                <ion-icon name="calendar-outline" color="success"></ion-icon>
+                <div class="stat-value">{{ userStats.totalReservations }}</div>
+                <div class="stat-label">Reservas</div>
+              </div>
+            </ion-col>
+            <ion-col size="6" size-md="3">
+              <div class="stat-item">
+                <ion-icon name="card-outline" color="warning"></ion-icon>
+                <div class="stat-value">{{ formatCurrency(userStats.totalIncome) }}</div>
+                <div class="stat-label">Ingresos</div>
+              </div>
+            </ion-col>
+            <ion-col size="6" size-md="3">
+              <div class="stat-item">
+                <ion-icon name="checkmark-circle" color="success"></ion-icon>
+                <div class="stat-value">{{ userStats.completedBookings }}</div>
+                <div class="stat-label">Completadas</div>
+              </div>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- User Details Card -->
+    <ion-card class="details-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="person-outline"></ion-icon>
+          Información Personal
+        </ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-list>
           <ion-item>
-            <ion-icon name="person-outline" slot="start"></ion-icon>
+            <ion-icon name="person-outline" slot="start" color="primary"></ion-icon>
             <ion-label>
-              <h3>Nombre</h3>
+              <h3>Nombre Completo</h3>
               <p>{{ currentUser.name }}</p>
             </ion-label>
           </ion-item>
           <ion-item>
-            <ion-icon name="mail-outline" slot="start"></ion-icon>
+            <ion-icon name="mail-outline" slot="start" color="primary"></ion-icon>
             <ion-label>
-              <h3>Email</h3>
+              <h3>Correo Electrónico</h3>
               <p>{{ currentUser.email }}</p>
             </ion-label>
           </ion-item>
           <ion-item *ngIf="currentUser.phone">
-            <ion-icon name="call-outline" slot="start"></ion-icon>
+            <ion-icon name="call-outline" slot="start" color="primary"></ion-icon>
             <ion-label>
               <h3>Teléfono</h3>
               <p>{{ currentUser.phone }}</p>
             </ion-label>
           </ion-item>
+          <ion-item *ngIf="!currentUser.phone">
+            <ion-icon name="call-outline" slot="start" color="medium"></ion-icon>
+            <ion-label>
+              <h3>Teléfono</h3>
+              <p class="text-muted">No especificado</p>
+            </ion-label>
+          </ion-item>
           <ion-item *ngIf="currentUser.address">
-            <ion-icon name="location-outline" slot="start"></ion-icon>
+            <ion-icon name="location-outline" slot="start" color="primary"></ion-icon>
             <ion-label>
               <h3>Dirección</h3>
               <p>{{ currentUser.address }}</p>
             </ion-label>
           </ion-item>
-          <ion-item>
-            <ion-icon name="calendar-outline" slot="start"></ion-icon>
+          <ion-item *ngIf="!currentUser.address">
+            <ion-icon name="location-outline" slot="start" color="medium"></ion-icon>
             <ion-label>
-              <h3>Fecha de Registro</h3>
-              <p>{{ currentUser.createdAt | date:'mediumDate' }}</p>
+              <h3>Dirección</h3>
+              <p class="text-muted">No especificada</p>
+            </ion-label>
+          </ion-item>
+          <ion-item>
+            <ion-icon name="calendar-outline" slot="start" color="primary"></ion-icon>
+            <ion-label>
+              <h3>Miembro Desde</h3>
+              <p>{{ currentUser.createdAt | date:'longDate':'':'es' }}</p>
             </ion-label>
           </ion-item>
         </ion-list>
       </ion-card-content>
     </ion-card>
 
-    <!-- Actions -->
-    <ion-card>
+    <!-- Quick Actions -->
+    <ion-card class="actions-card">
       <ion-card-header>
-        <ion-card-title>Acciones</ion-card-title>
+        <ion-card-title>
+          <ion-icon name="briefcase-outline"></ion-icon>
+          Acciones Rápidas
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col size="6">
+              <ion-button expand="block" fill="outline" (click)="navigateTo('/my-spaces')">
+                <ion-icon name="home-outline" slot="start"></ion-icon>
+                Mis Espacios
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" fill="outline" (click)="navigateTo('/reservations-calendar')">
+                <ion-icon name="calendar-outline" slot="start"></ion-icon>
+                Reservas
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" fill="outline" (click)="navigateTo('/payments')">
+                <ion-icon name="card-outline" slot="start"></ion-icon>
+                Pagos
+              </ion-button>
+            </ion-col>
+            <ion-col size="6">
+              <ion-button expand="block" fill="outline" (click)="navigateTo('/notifications')">
+                <ion-icon name="notifications" slot="start"></ion-icon>
+                Notificaciones
+              </ion-button>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Profile Actions -->
+    <ion-card class="profile-actions-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="create-outline"></ion-icon>
+          Configuración de Cuenta
+        </ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-button expand="block" color="primary" (click)="editProfile()">
           <ion-icon name="create-outline" slot="start"></ion-icon>
           Editar Perfil
+        </ion-button>
+        <ion-button expand="block" color="medium" fill="outline" (click)="changePassword()">
+          <ion-icon name="key-outline" slot="start"></ion-icon>
+          Cambiar Contraseña
         </ion-button>
         <ion-button expand="block" color="danger" (click)="logout()">
           <ion-icon name="log-out-outline" slot="start"></ion-icon>
@@ -79,10 +207,18 @@
     </ion-card>
   </div>
 
+  <!-- No User State -->
   <div class="no-user" *ngIf="!currentUser">
     <ion-card>
       <ion-card-content>
-        <p>No hay usuario autenticado.</p>
+        <div class="empty-state">
+          <ion-icon name="person-outline"></ion-icon>
+          <h2>No hay usuario autenticado</h2>
+          <p>Por favor inicia sesión para ver tu perfil</p>
+          <ion-button (click)="navigateTo('/login')" color="primary">
+            Iniciar Sesión
+          </ion-button>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>
