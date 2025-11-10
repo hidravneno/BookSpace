@@ -14,51 +14,169 @@
     </ion-toolbar>
   </ion-header>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Historial de Pagos</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Aquí se mostrarán los pagos realizados y los ingresos generados.</p>
-      <ion-list>
-        <ion-item>
-          <ion-label>Pago por reserva #1234 - $50.00</ion-label>
-          <ion-badge color="success">Completado</ion-badge>
-        </ion-item>
-        <ion-item>
-          <ion-label>Ingreso por espacio ABC - $100.00</ion-label>
-          <ion-badge color="primary">Recibido</ion-badge>
-        </ion-item>
-        <ion-item>
-          <ion-label>Pago por reserva #5678 - $75.00</ion-label>
-          <ion-badge color="warning">Pendiente</ion-badge>
-        </ion-item>
-      </ion-list>
-    </ion-card-content>
-  </ion-card>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Resumen Financiero</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <p>Total de ingresos: $225.00</p>
-      <p>Total de pagos: $125.00</p>
-      <p>Balance: $100.00</p>
-    </ion-card-content>
-  </ion-card>
+  <!-- Loading State -->
+  <div class="loading-container" *ngIf="isLoading">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Cargando pagos...</p>
+  </div>
 
-  <ion-card>
-    <ion-card-header>
-      <ion-card-title>Gráfico de Ingresos vs Pagos</ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-      <canvas baseChart
-              [data]="barChartData"
-              [options]="barChartOptions"
-              [type]="barChartType">
-      </canvas>
-    </ion-card-content>
-  </ion-card>
+  <!-- Content -->
+  <div *ngIf="!isLoading">
+    <!-- Financial Summary -->
+    <ion-card class="summary-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="wallet-outline"></ion-icon>
+          Resumen Financiero
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="summary-grid">
+          <div class="summary-item income">
+            <div class="summary-icon">
+              <ion-icon name="trending-up-outline"></ion-icon>
+            </div>
+            <div class="summary-info">
+              <div class="summary-label">Ingresos Totales</div>
+              <div class="summary-value">{{ formatCurrency(summary.totalIncome) }}</div>
+            </div>
+          </div>
+
+          <div class="summary-item expense">
+            <div class="summary-icon">
+              <ion-icon name="trending-down-outline"></ion-icon>
+            </div>
+            <div class="summary-info">
+              <div class="summary-label">Gastos Totales</div>
+              <div class="summary-value">{{ formatCurrency(summary.totalExpenses) }}</div>
+            </div>
+          </div>
+
+          <div class="summary-item balance" [class.positive]="summary.balance >= 0" [class.negative]="summary.balance < 0">
+            <div class="summary-icon">
+              <ion-icon name="wallet-outline"></ion-icon>
+            </div>
+            <div class="summary-info">
+              <div class="summary-label">Balance</div>
+              <div class="summary-value">{{ formatCurrency(summary.balance) }}</div>
+            </div>
+          </div>
+
+          <div class="summary-stats">
+            <ion-chip color="success">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <ion-label>{{ summary.completedPayments }} completados</ion-label>
+            </ion-chip>
+            <ion-chip color="warning">
+              <ion-icon name="time-outline"></ion-icon>
+              <ion-label>{{ summary.pendingPayments }} pendientes</ion-label>
+            </ion-chip>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Chart -->
+    <ion-card class="chart-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="receipt-outline"></ion-icon>
+          Tendencia Mensual
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="chart-container">
+          <canvas baseChart
+                  [data]="barChartData"
+                  [options]="barChartOptions"
+                  [type]="barChartType">
+          </canvas>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Filter -->
+    <ion-card class="filter-card">
+      <ion-card-content>
+        <ion-segment [value]="selectedFilter" (ionChange)="onFilterChange($event)">
+          <ion-segment-button value="all">
+            <ion-label>Todos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="income">
+            <ion-label>Ingresos</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="expense">
+            <ion-label>Gastos</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Payments List -->
+    <ion-card class="payments-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="filter-outline"></ion-icon>
+          Historial de Transacciones
+        </ion-card-title>
+        <ion-card-subtitle>{{ filteredPayments.length }} transacciones</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list *ngIf="filteredPayments.length > 0; else emptyPayments">
+          <ion-item *ngFor="let payment of filteredPayments" class="payment-item" [class]="payment.type">
+            <div class="payment-content">
+              <div class="payment-header">
+                <div class="payment-type">
+                  <ion-icon [name]="getPaymentIcon(payment)" [color]="getPaymentColor(payment)"></ion-icon>
+                  <h3>{{ payment.description }}</h3>
+                </div>
+                <div class="payment-amount" [class]="payment.type">
+                  <span class="sign">{{ payment.type === 'income' ? '+' : '-' }}</span>
+                  {{ formatCurrency(payment.amount) }}
+                </div>
+              </div>
+
+              <div class="payment-details">
+                <div class="detail-item">
+                  <ion-icon name="calendar-outline"></ion-icon>
+                  <span>{{ formatDate(payment.date) }} • {{ formatTime(payment.date) }}</span>
+                </div>
+                
+                <div class="detail-item">
+                  <ion-icon [name]="getMethodIcon(payment.method)"></ion-icon>
+                  <span>{{ getMethodText(payment.method) }}</span>
+                </div>
+
+                <div class="detail-item">
+                  <ion-badge [color]="getStatusColor(payment.status)">
+                    <ion-icon [name]="getStatusIcon(payment.status)"></ion-icon>
+                    {{ getStatusText(payment.status) }}
+                  </ion-badge>
+                </div>
+              </div>
+
+              <div class="payment-meta" *ngIf="payment.reservationId">
+                <small>Reserva #{{ payment.reservationId.substring(0, 8) }}</small>
+              </div>
+            </div>
+          </ion-item>
+        </ion-list>
+
+        <ng-template #emptyPayments>
+          <div class="empty-state">
+            <ion-icon name="wallet-outline"></ion-icon>
+            <h2>No hay transacciones</h2>
+            <p *ngIf="selectedFilter === 'all'">Aún no tienes pagos o ingresos registrados</p>
+            <p *ngIf="selectedFilter === 'income'">No tienes ingresos registrados</p>
+            <p *ngIf="selectedFilter === 'expense'">No tienes gastos registrados</p>
+          </div>
+        </ng-template>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
 </ion-content>

@@ -20,71 +20,200 @@
       <ion-card-subtitle>Completa los detalles para registrar tu espacio</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
-      <form (ngSubmit)="onSubmit()">
-        <ion-item>
-          <ion-label position="stacked">Nombre del Espacio</ion-label>
-          <ion-input [(ngModel)]="spaceForm.name" name="name" placeholder="Ej: Sala de Reuniones A" required></ion-input>
+      <form (ngSubmit)="onSubmit()" #spaceFormElement="ngForm">
+        
+        <!-- Nombre del Espacio -->
+        <ion-item [class.ion-invalid]="formErrors.name" lines="full">
+          <ion-label position="stacked">Nombre del Espacio *</ion-label>
+          <ion-input 
+            [(ngModel)]="spaceForm.name" 
+            name="name" 
+            placeholder="Ej: Sala de Reuniones A" 
+            required>
+          </ion-input>
+          <ion-note slot="error" *ngIf="formErrors.name">{{ formErrors.name }}</ion-note>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Tipo de Espacio</ion-label>
-          <ion-select [(ngModel)]="spaceForm.type" name="type" placeholder="Selecciona el tipo">
-            <ion-select-option *ngFor="let type of spaceTypes" [value]="type.value">{{ type.label }}</ion-select-option>
+        <!-- Tipo de Espacio -->
+        <ion-item [class.ion-invalid]="formErrors.type" lines="full">
+          <ion-label position="stacked">Tipo de Espacio *</ion-label>
+          <ion-select 
+            [(ngModel)]="spaceForm.type" 
+            name="type" 
+            placeholder="Selecciona el tipo"
+            interface="alert"
+            (ionChange)="onTypeChange($event)">
+            <ion-select-option *ngFor="let type of spaceTypes" [value]="type.value">
+              {{ type.label }}
+            </ion-select-option>
           </ion-select>
+          <ion-note slot="error" *ngIf="formErrors.type">{{ formErrors.type }}</ion-note>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Capacidad (personas)</ion-label>
-          <ion-input [(ngModel)]="spaceForm.capacity" name="capacity" type="number" placeholder="Ej: 10" required></ion-input>
+        <!-- Campo personalizado para "Otro" -->
+        <ion-item *ngIf="isCustomTypeSelected" lines="full">
+          <ion-label position="stacked">Especifica el tipo de espacio *</ion-label>
+          <ion-input 
+            [(ngModel)]="spaceForm.customType" 
+            name="customType" 
+            placeholder="Ej: Estudio de grabación, Laboratorio, etc."
+            required>
+          </ion-input>
         </ion-item>
 
-        <ion-item>
-          <ion-label position="stacked">Precio por Hora ($)</ion-label>
-          <ion-input [(ngModel)]="spaceForm.pricePerHour" name="pricePerHour" type="number" placeholder="Ej: 50" required></ion-input>
+        <!-- Capacidad -->
+        <ion-item [class.ion-invalid]="formErrors.capacity" lines="full">
+          <ion-label position="stacked">Capacidad (personas) *</ion-label>
+          <ion-input 
+            [(ngModel)]="spaceForm.capacity" 
+            name="capacity" 
+            type="number" 
+            placeholder="Ej: 10" 
+            min="1"
+            required>
+          </ion-input>
+          <ion-note slot="error" *ngIf="formErrors.capacity">{{ formErrors.capacity }}</ion-note>
         </ion-item>
 
-        <ion-item>
+        <!-- Precio por Hora -->
+        <ion-item [class.ion-invalid]="formErrors.pricePerHour" lines="full">
+          <ion-label position="stacked">Precio por Hora (MXN) *</ion-label>
+          <ion-input 
+            [(ngModel)]="spaceForm.pricePerHour" 
+            name="pricePerHour" 
+            type="number" 
+            placeholder="Ej: 50" 
+            min="1"
+            required>
+          </ion-input>
+          <ion-note slot="error" *ngIf="formErrors.pricePerHour">{{ formErrors.pricePerHour }}</ion-note>
+        </ion-item>
+
+        <!-- Precio por Día (Opcional) -->
+        <ion-item lines="full">
+          <ion-label position="stacked">Precio por Día (MXN) <span class="optional">(Opcional)</span></ion-label>
+          <ion-input 
+            [(ngModel)]="spaceForm.pricePerDay" 
+            name="pricePerDay" 
+            type="number" 
+            placeholder="Ej: 300" 
+            min="1">
+          </ion-input>
+        </ion-item>
+
+        <!-- Dirección -->
+        <ion-item [class.ion-invalid]="formErrors.address" lines="full">
+          <ion-label position="stacked">Dirección *</ion-label>
+          <ion-input 
+            [(ngModel)]="spaceForm.address" 
+            name="address" 
+            placeholder="Ej: Av. Reforma 123, Col. Centro" 
+            required>
+          </ion-input>
+          <ion-note slot="error" *ngIf="formErrors.address">{{ formErrors.address }}</ion-note>
+        </ion-item>
+
+        <!-- Ciudad -->
+        <ion-item [class.ion-invalid]="formErrors.city" lines="full">
+          <ion-label position="stacked">Ciudad *</ion-label>
+          <ion-input 
+            [(ngModel)]="spaceForm.city" 
+            name="city" 
+            placeholder="Ej: Ciudad de México" 
+            required>
+          </ion-input>
+          <ion-note slot="error" *ngIf="formErrors.city">{{ formErrors.city }}</ion-note>
+        </ion-item>
+
+        <!-- Descripción -->
+        <ion-item lines="full">
           <ion-label position="stacked">Descripción</ion-label>
-          <ion-textarea [(ngModel)]="spaceForm.description" name="description" placeholder="Describe las características del espacio" rows="3"></ion-textarea>
+          <ion-textarea 
+            [(ngModel)]="spaceForm.description" 
+            name="description" 
+            placeholder="Describe las características del espacio" 
+            rows="4"
+            maxlength="500">
+          </ion-textarea>
         </ion-item>
 
-        <ion-button expand="block" type="submit" color="primary">
-          Registrar Espacio
-        </ion-button>
+        <!-- Amenidades -->
+        <div class="amenities-section">
+          <ion-label class="section-label">Amenidades</ion-label>
+          <div class="amenities-grid">
+            <ion-item *ngFor="let amenity of amenitiesList" lines="none" class="amenity-item">
+              <ion-checkbox 
+                slot="start"
+                [checked]="isAmenitySelected(amenity)"
+                (ionChange)="onAmenityChange(amenity, $event)">
+              </ion-checkbox>
+              <ion-label>{{ amenity }}</ion-label>
+            </ion-item>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="action-buttons">
+          <ion-button 
+            expand="block" 
+            type="submit" 
+            color="primary"
+            [disabled]="isSubmitting">
+            <ion-icon name="save-outline" slot="start"></ion-icon>
+            {{ isSubmitting ? 'Registrando...' : 'Registrar Espacio' }}
+          </ion-button>
+          
+          <ion-button 
+            expand="block" 
+            fill="outline" 
+            color="medium" 
+            (click)="onCancel()"
+            [disabled]="isSubmitting">
+            <ion-icon name="close-circle" slot="start"></ion-icon>
+            Cancelar
+          </ion-button>
+        </div>
+
       </form>
     </ion-card-content>
   </ion-card>
 
-  <!-- Información Estática de Ejemplo -->
+  <!-- Información de ayuda -->
   <ion-card>
     <ion-card-header>
-      <ion-card-title>Ejemplos de Espacios</ion-card-title>
+      <ion-card-title>
+        <ion-icon name="business-outline" color="primary"></ion-icon>
+        Ejemplos de Espacios
+      </ion-card-title>
       <ion-card-subtitle>Referencias para completar el formulario</ion-card-subtitle>
     </ion-card-header>
     <ion-card-content>
       <ion-list>
-        <ion-item>
+        <ion-item lines="full">
           <ion-icon name="business-outline" slot="start" color="primary"></ion-icon>
           <ion-label>
             <h2>Sala de Reuniones</h2>
-            <p>Capacidad: 8-12 personas, Precio: $40-60/hora</p>
-            <p>Equipada con proyector, pizarra y WiFi</p>
+            <p>Capacidad: 8-12 personas</p>
+            <p>Precio: $40-60/hora</p>
+            <p class="small-text">Equipada con proyector, pizarra y WiFi</p>
           </ion-label>
         </ion-item>
-        <ion-item>
+        <ion-item lines="full">
           <ion-icon name="home-outline" slot="start" color="secondary"></ion-icon>
           <ion-label>
             <h2>Oficina Privada</h2>
-            <p>Capacidad: 2-6 personas, Precio: $25-45/hora</p>
-            <p>Espacio individual con escritorio y silla ergonómica</p>
+            <p>Capacidad: 2-6 personas</p>
+            <p>Precio: $25-45/hora</p>
+            <p class="small-text">Espacio individual con escritorio y silla ergonómica</p>
           </ion-label>
         </ion-item>
-        <ion-item>
+        <ion-item lines="none">
           <ion-icon name="people-outline" slot="start" color="tertiary"></ion-icon>
           <ion-label>
-            <h2>Auditorio</h2>
-            <p>Capacidad: 50-200 personas, Precio: $100-300/hora</p>
-            <p>Equipado con sistema de sonido y escenario</p>
+            <h2>Espacio de Coworking</h2>
+            <p>Capacidad: 10-30 personas</p>
+            <p>Precio: $15-30/hora</p>
+            <p class="small-text">Áreas comunes, WiFi y café incluido</p>
           </ion-label>
         </ion-item>
       </ion-list>

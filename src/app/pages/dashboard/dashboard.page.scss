@@ -1,0 +1,110 @@
+// Loading Container
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+
+  ion-spinner {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 20px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+// Stats Cards
+.stat-card {
+  text-align: center;
+  margin: 0;
+
+  ion-card-header {
+    padding: 16px;
+  }
+
+  .stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    margin-bottom: 4px;
+    color: var(--ion-color-primary);
+  }
+
+  ion-card-subtitle {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+// Quick Actions
+ion-card {
+  margin: 16px;
+
+  ion-button {
+    margin-top: 12px;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+  }
+}
+
+// Activity List
+.activity-time {
+  font-size: 11px;
+  color: var(--ion-color-medium);
+  margin-top: 4px;
+}
+
+.no-activity {
+  text-align: center;
+  color: var(--ion-color-medium);
+  padding: 20px;
+  font-style: italic;
+}
+
+ion-list {
+  padding: 0;
+
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+
+    ion-label {
+      margin: 12px 0;
+
+      h3 {
+        font-weight: 600;
+        margin-bottom: 4px;
+      }
+
+      p {
+        font-size: 14px;
+        margin-bottom: 2px;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (min-width: 768px) {
+  ion-card {
+    margin: 20px;
+  }
+
+  .stat-card {
+    .stat-number {
+      font-size: 40px;
+    }
+
+    ion-card-subtitle {
+      font-size: 14px;
+    }
+  }
+}
