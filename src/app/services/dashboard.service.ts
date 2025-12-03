@@ -504,6 +504,22 @@ export class DashboardService {
   }
 
   /**
+   * Elimina un espacio
+   */
+  deleteSpace(spaceId: string): boolean {
+    const spaces = this.getSpaces();
+    const index = spaces.findIndex(s => s.id === spaceId);
+    
+    if (index !== -1) {
+      spaces.splice(index, 1);
+      localStorage.setItem(this.SPACES_KEY, JSON.stringify(spaces));
+      return true;
+    }
+    
+    return false;
+  }
+
+  /**
    * Genera un ID único
    */
   private generateId(): string {

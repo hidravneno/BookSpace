@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonItem, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonButton, IonList, IonIcon, IonCheckbox, IonGrid, IonRow, IonCol, IonNote } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonItem, IonLabel, IonInput, IonTextarea, IonSelect, IonSelectOption, IonButton, IonList, IonIcon, IonCheckbox, IonGrid, IonRow, IonCol, IonNote, AlertController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { checkmarkCircle, businessOutline, homeOutline, peopleOutline, saveOutline, closeCircle } from 'ionicons/icons';
+import { checkmarkCircle, businessOutline, homeOutline, peopleOutline, saveOutline, closeCircle, addCircleOutline, closeOutline } from 'ionicons/icons';
 import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../services/toast.service';
@@ -22,6 +22,8 @@ export class RegisterSpacePage implements OnInit {
   isMobile = false;
   isSubmitting = false;
   showCustomType = false;
+  showCustomAmenityInput = false;
+  customAmenity = '';
 
   spaceForm = {
     name: '',
@@ -74,9 +76,10 @@ export class RegisterSpacePage implements OnInit {
     private router: Router,
     private dashboardService: DashboardService,
     private authService: AuthService,
-    private toastService: ToastService
+    private toastService: ToastService,
+    private alertController: AlertController
   ) {
-    addIcons({ checkmarkCircle, businessOutline, homeOutline, peopleOutline, saveOutline, closeCircle });
+    addIcons({ checkmarkCircle, businessOutline, homeOutline, peopleOutline, saveOutline, closeCircle, addCircleOutline, closeOutline });
   }
 
   ngOnInit() {
@@ -131,6 +134,68 @@ export class RegisterSpacePage implements OnInit {
    */
   isAmenitySelected(amenity: string): boolean {
     return this.spaceForm.amenities.includes(amenity);
+  }
+
+  /**
+   * Muestra el campo para agregar una amenidad personalizada
+   */
+  showAddCustomAmenity() {
+    this.showCustomAmenityInput = true;
+  }
+
+  /**
+   * Agrega una amenidad personalizada
+   */
+  async addCustomAmenity() {
+    const trimmedAmenity = this.customAmenity.trim();
+    
+    if (!trimmedAmenity) {
+      const alert = await this.alertController.create({
+        header: 'Error',
+        message: 'Por favor ingresa el nombre de la amenidad',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    // Verificar que no exista ya (case insensitive)
+    const exists = this.amenitiesList.some(
+      a => a.toLowerCase() === trimmedAmenity.toLowerCase()
+    );
+
+    if (exists) {
+      const alert = await this.alertController.create({
+        header: 'Amenidad existente',
+        message: 'Esta amenidad ya existe en la lista',
+        buttons: ['OK']
+      });
+      await alert.present();
+      return;
+    }
+
+    // Agregar la nueva amenidad a la lista
+    this.amenitiesList.push(trimmedAmenity);
+    
+    // Agregar automáticamente a las amenidades seleccionadas
+    if (!this.spaceForm.amenities.includes(trimmedAmenity)) {
+      this.spaceForm.amenities.push(trimmedAmenity);
+    }
+    
+    // Limpiar el campo y ocultar el input
+    this.customAmenity = '';
+    this.showCustomAmenityInput = false;
+
+    // Mostrar confirmación
+    await this.toastService.showSuccessToast('Amenidad agregada exitosamente');
+  }
+
+  /**
+   * Cancela la adición de amenidad personalizada
+   */
+  cancelCustomAmenity() {
+    this.customAmenity = '';
+    this.showCustomAmenityInput = false;
   }
 
   /**

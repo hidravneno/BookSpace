@@ -93,6 +93,62 @@ ion-textarea {
       }
     }
   }
+
+  .add-amenity-btn {
+    margin-top: 16px;
+    --border-radius: 8px;
+    text-transform: none;
+    font-weight: 500;
+  }
+
+  .custom-amenity-container {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--ion-color-light);
+    border-radius: 8px;
+    border: 2px dashed var(--ion-color-medium);
+
+    .custom-amenity-input {
+      --background: white;
+      --color: #000000;
+      --placeholder-color: #999999;
+      --placeholder-opacity: 1;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      border: 1px solid var(--ion-color-medium-tint);
+
+      ion-input {
+        --color: #000000 !important;
+        color: #000000 !important;
+        --padding-start: 12px;
+        --padding-end: 12px;
+        min-height: 48px;
+
+        input {
+          color: #000000 !important;
+        }
+      }
+
+      ion-label {
+        color: var(--ion-color-medium) !important;
+      }
+    }
+
+    .custom-amenity-buttons {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+
+      ion-button {
+        flex: 1;
+        --border-radius: 6px;
+        text-transform: none;
+        font-weight: 500;
+        height: 36px;
+        font-size: 14px;
+      }
+    }
+  }
 }
 
 // Action Buttons

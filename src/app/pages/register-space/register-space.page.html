@@ -150,6 +150,51 @@
               <ion-label>{{ amenity }}</ion-label>
             </ion-item>
           </div>
+
+          <!-- Botón para agregar amenidad personalizada -->
+          <ion-button 
+            *ngIf="!showCustomAmenityInput"
+            fill="outline" 
+            size="small"
+            class="add-amenity-btn"
+            (click)="showAddCustomAmenity()">
+            <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+            Agregar otra amenidad
+          </ion-button>
+
+          <!-- Campo para agregar amenidad personalizada -->
+          <div *ngIf="showCustomAmenityInput" class="custom-amenity-container">
+            <ion-item lines="none" class="custom-amenity-input">
+              <ion-label position="floating">Nueva amenidad</ion-label>
+              <ion-input 
+                [(ngModel)]="customAmenity"
+                name="customAmenity"
+                type="text"
+                placeholder="Ej: Terraza, Jardín, Gimnasio, etc."
+                [clearInput]="true"
+                (keyup.enter)="addCustomAmenity()">
+              </ion-input>
+            </ion-item>
+            
+            <div class="custom-amenity-buttons">
+              <ion-button 
+                size="small" 
+                color="success"
+                (click)="addCustomAmenity()">
+                <ion-icon slot="start" name="checkmark-circle"></ion-icon>
+                Agregar
+              </ion-button>
+              
+              <ion-button 
+                size="small" 
+                fill="outline" 
+                color="medium"
+                (click)="cancelCustomAmenity()">
+                <ion-icon slot="start" name="close-outline"></ion-icon>
+                Cancelar
+              </ion-button>
+            </div>
+          </div>
         </div>
 
         <!-- Botones de Acción -->
