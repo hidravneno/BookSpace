@@ -18,9 +18,18 @@
     <!-- Profile Header -->
     <div class="profile-header">
       <div class="avatar-container">
-        <ion-avatar class="user-avatar">
-          <div class="avatar-initials">{{ getInitials() }}</div>
+        <ion-avatar class="user-avatar" (click)="changeAvatar()">
+          <img *ngIf="currentUser.avatar" [src]="currentUser.avatar" alt="Avatar" />
+          <div *ngIf="!currentUser.avatar" class="avatar-initials">{{ getInitials() }}</div>
         </ion-avatar>
+        <ion-button 
+          class="avatar-edit-btn" 
+          fill="solid" 
+          shape="round" 
+          size="small"
+          (click)="changeAvatar()">
+          <ion-icon name="camera-outline"></ion-icon>
+        </ion-button>
       </div>
       <div class="user-info">
         <h1>{{ currentUser.name }}</h1>

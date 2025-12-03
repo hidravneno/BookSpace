@@ -1,12 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonLabel, IonButton, IonIcon, IonInput, IonTextarea, IonAvatar, IonChip, IonGrid, IonRow, IonCol, AlertController, ToastController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonList, IonItem, IonLabel, IonButton, IonIcon, IonInput, IonTextarea, IonAvatar, IonChip, IonGrid, IonRow, IonCol, AlertController, ToastController, ActionSheetController } from '@ionic/angular/standalone';
 import { AuthService, AuthUser } from '../../services/auth.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { logOutOutline, personOutline, mailOutline, calendarOutline, callOutline, locationOutline, createOutline, homeOutline, cardOutline, starOutline, timeOutline, briefcaseOutline, checkmarkCircle, trendingUpOutline, peopleOutline, notifications, keyOutline } from 'ionicons/icons';
+import { logOutOutline, personOutline, mailOutline, calendarOutline, callOutline, locationOutline, createOutline, homeOutline, cardOutline, starOutline, timeOutline, briefcaseOutline, checkmarkCircle, trendingUpOutline, peopleOutline, notifications, keyOutline, cameraOutline, imagesOutline, trashOutline } from 'ionicons/icons';
 
 interface UserStats {
   totalSpaces: number;
@@ -31,7 +31,7 @@ interface UserStats {
     CommonModule, FormsModule
   ]
 })
-export class ProfilePage implements OnInit {
+export class ProfilePage implements OnInit, OnDestroy {
 
   currentUser: AuthUser | null = null;
   userStats: UserStats = {
@@ -44,24 +44,49 @@ export class ProfilePage implements OnInit {
     memberSince: ''
   };
   isLoading = true;
+  private userSubscription: any;
 
   constructor(
     private authService: AuthService,
     private dashboardService: DashboardService,
     private router: Router,
     private alertController: AlertController,
-    private toastController: ToastController
+    private toastController: ToastController,
+    private actionSheetController: ActionSheetController,
+    private cdr: ChangeDetectorRef
   ) {
     addIcons({ 
       logOutOutline, personOutline, mailOutline, calendarOutline, callOutline, 
       locationOutline, createOutline, homeOutline, cardOutline, starOutline, 
       timeOutline, briefcaseOutline, checkmarkCircle, trendingUpOutline, 
-      peopleOutline, notifications, keyOutline 
+      peopleOutline, notifications, keyOutline, cameraOutline, imagesOutline, trashOutline
     });
   }
 
   ngOnInit() {
     this.loadUserProfile();
+    this.subscribeToUserChanges();
+  }
+
+  ngOnDestroy() {
+    // Limpiar suscripción cuando el componente se destruya
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
+    }
+  }
+
+  /**
+   * Se suscribe a los cambios del usuario para actualización en tiempo real
+   */
+  private subscribeToUserChanges() {
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.currentUser = user;
+        this.loadUserStats();
+        // Forzar detección de cambios para actualizar la vista inmediatamente
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   loadUserProfile() {
@@ -133,6 +158,13 @@ export class ProfilePage implements OnInit {
       return `${names[0][0]}${names[1][0]}`.toUpperCase();
     }
     return this.currentUser.name.substring(0, 2).toUpperCase();
+  }
+
+  /**
+   * Obtiene el avatar actual del usuario
+   */
+  getUserAvatar(): string | undefined {
+    return this.currentUser?.avatar;
   }
 
   async logout() {
@@ -217,7 +249,7 @@ export class ProfilePage implements OnInit {
               });
               
               if (success) {
-                this.currentUser = this.authService.getCurrentUser();
+                // No necesitamos actualizar manualmente currentUser porque el observable lo hará
                 this.showToast('Perfil actualizado correctamente', 'success');
               } else {
                 this.showToast('Error al actualizar el perfil', 'danger');
@@ -309,6 +341,166 @@ export class ProfilePage implements OnInit {
 
   navigateTo(route: string) {
     this.router.navigate([route]);
+  }
+
+  /**
+   * Muestra opciones para cambiar el avatar
+   */
+  async changeAvatar() {
+    const actionSheet = await this.actionSheetController.create({
+      header: 'Cambiar Foto de Perfil',
+      buttons: [
+        {
+          text: 'Seleccionar desde galería',
+          icon: 'images-outline',
+          handler: () => {
+            this.selectAvatarFromGallery();
+          }
+        },
+        {
+          text: 'Tomar foto',
+          icon: 'camera-outline',
+          handler: () => {
+            this.takePhoto();
+          }
+        },
+        ...(this.currentUser?.avatar ? [{
+          text: 'Eliminar foto',
+          icon: 'trash-outline',
+          role: 'destructive' as const,
+          handler: () => {
+            this.removeAvatar();
+          }
+        }] : []),
+        {
+          text: 'Cancelar',
+          icon: 'close',
+          role: 'cancel' as const
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+
+  /**
+   * Selecciona una imagen desde la galería
+   */
+  selectAvatarFromGallery() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        this.processImageFile(file);
+      }
+    };
+    input.click();
+  }
+
+  /**
+   * Toma una foto con la cámara (simulado en web, usa input de archivo)
+   */
+  takePhoto() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.capture = 'environment'; // Intenta usar la cámara en móviles
+    input.onchange = (event: any) => {
+      const file = event.target.files[0];
+      if (file) {
+        this.processImageFile(file);
+      }
+    };
+    input.click();
+  }
+
+  /**
+   * Procesa el archivo de imagen seleccionado
+   */
+  private async processImageFile(file: File) {
+    // Validar tamaño (máximo 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      this.showToast('La imagen es demasiado grande. Máximo 5MB', 'warning');
+      return;
+    }
+
+    // Validar tipo
+    if (!file.type.startsWith('image/')) {
+      this.showToast('Por favor selecciona una imagen válida', 'warning');
+      return;
+    }
+
+    // Mostrar mensaje de procesamiento
+    const loadingToast = await this.toastController.create({
+      message: 'Procesando imagen...',
+      duration: 0,
+      position: 'bottom'
+    });
+    await loadingToast.present();
+
+    const reader = new FileReader();
+    reader.onload = async (e: any) => {
+      const base64Image = e.target.result;
+      await this.updateAvatarImage(base64Image);
+      loadingToast.dismiss();
+    };
+    reader.onerror = async () => {
+      await loadingToast.dismiss();
+      this.showToast('Error al procesar la imagen', 'danger');
+    };
+    reader.readAsDataURL(file);
+  }
+
+  /**
+   * Actualiza la imagen del avatar
+   */
+  private async updateAvatarImage(base64Image: string) {
+    if (!this.currentUser) return;
+
+    const success = this.authService.updateAvatar(this.currentUser.id, base64Image);
+    
+    if (success) {
+      // Esperar un tick para que se propague el cambio a través del observable
+      setTimeout(() => {
+        this.cdr.detectChanges();
+      }, 0);
+      this.showToast('Foto de perfil actualizada correctamente', 'success');
+    } else {
+      this.showToast('Error al actualizar la foto de perfil', 'danger');
+    }
+  }
+
+  /**
+   * Elimina el avatar del usuario
+   */
+  private async removeAvatar() {
+    if (!this.currentUser) return;
+
+    const alert = await this.alertController.create({
+      header: 'Eliminar Foto',
+      message: '¿Estás seguro de que deseas eliminar tu foto de perfil?',
+      buttons: [
+        {
+          text: 'Cancelar',
+          role: 'cancel'
+        },
+        {
+          text: 'Eliminar',
+          role: 'destructive',
+          handler: () => {
+            const success = this.authService.updateAvatar(this.currentUser!.id, '');
+            if (success) {
+              // No necesitamos actualizar manualmente currentUser porque el observable lo hará
+              this.showToast('Foto de perfil eliminada', 'success');
+            }
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
 }

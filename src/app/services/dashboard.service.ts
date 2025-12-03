@@ -485,6 +485,25 @@ export class DashboardService {
   }
 
   /**
+   * Actualiza un espacio existente
+   */
+  updateSpace(updatedSpace: Space): boolean {
+    const spaces = this.getSpaces();
+    const index = spaces.findIndex(s => s.id === updatedSpace.id);
+    
+    if (index !== -1) {
+      spaces[index] = {
+        ...updatedSpace,
+        updatedAt: new Date()
+      };
+      localStorage.setItem(this.SPACES_KEY, JSON.stringify(spaces));
+      return true;
+    }
+    
+    return false;
+  }
+
+  /**
    * Genera un ID único
    */
   private generateId(): string {

@@ -1,0 +1,93 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title>welcome</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="welcome-container">
+    <img
+      src="assets/LOGO.png"
+      alt="Logo de BOOKSPACE"
+      class="logo"
+    />
+    <h1>Bienvenido a BookSpace</h1>
+    <p class="subtitle">Elige cómo quieres usar la plataforma</p>
+    
+    <div class="cards-container">
+      <!-- Card para Renters (Inquilinos) -->
+      <ion-card class="role-card">
+        <ion-card-header>
+          <ion-icon name="search-outline" size="large" color="primary"></ion-icon>
+          <ion-card-title>Busco un Espacio</ion-card-title>
+          <ion-card-subtitle>Encuentra y reserva espacios para trabajar</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ul class="features-list">
+            <li>Explora espacios disponibles</li>
+            <li>Reserva por horas o días</li>
+            <li>Guarda tus favoritos</li>
+            <li>Gestiona tus reservas</li>
+          </ul>
+          
+          <ion-button 
+            expand="block" 
+            fill="solid" 
+            color="primary"
+            (click)="goToLogin('renter')"
+            class="action-button">
+            <ion-icon name="log-in" slot="start"></ion-icon>
+            Iniciar sesión
+          </ion-button>
+          
+          <ion-button 
+            expand="block" 
+            fill="outline" 
+            color="primary"
+            (click)="goToRegister('renter')"
+            class="action-button">
+            <ion-icon name="person-add" slot="start"></ion-icon>
+            Registrarme
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Card para Hosts (Anfitriones) -->
+      <ion-card class="role-card">
+        <ion-card-header>
+          <ion-icon name="business-outline" size="large" color="secondary"></ion-icon>
+          <ion-card-title>Ofrezco un Espacio</ion-card-title>
+          <ion-card-subtitle>Publica tus espacios y genera ingresos</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <ul class="features-list">
+            <li>Registra tus espacios</li>
+            <li>Gestiona reservas</li>
+            <li>Control de disponibilidad</li>
+            <li>Seguimiento de ingresos</li>
+          </ul>
+          
+          <ion-button 
+            expand="block" 
+            fill="solid" 
+            color="secondary"
+            (click)="goToLogin('host')"
+            class="action-button">
+            <ion-icon name="log-in" slot="start"></ion-icon>
+            Iniciar sesión
+          </ion-button>
+          
+          <ion-button 
+            expand="block" 
+            fill="outline" 
+            color="secondary"
+            (click)="goToRegister('host')"
+            class="action-button">
+            <ion-icon name="person-add" slot="start"></ion-icon>
+            Registrarme
+          </ion-button>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
+</ion-content>

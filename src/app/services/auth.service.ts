@@ -10,6 +10,7 @@ export interface User {
   password: string;
   phone?: string;
   address?: string;
+  avatar?: string;
   createdAt: Date;
 }
 
@@ -19,6 +20,7 @@ export interface AuthUser {
   email: string;
   phone?: string;
   address?: string;
+  avatar?: string;
   createdAt: Date;
 }
 
@@ -147,7 +149,7 @@ export class AuthService {
   /**
    * Actualiza el perfil del usuario
    */
-  updateProfile(userId: string, updates: Partial<Pick<User, 'name' | 'email' | 'phone' | 'address'>>): boolean {
+  updateProfile(userId: string, updates: Partial<Pick<User, 'name' | 'email' | 'phone' | 'address' | 'avatar'>>): boolean {
     const users = this.getUsers();
     const userIndex = users.findIndex(u => u.id === userId);
     if (userIndex === -1) return false;
@@ -167,6 +169,13 @@ export class AuthService {
     }
 
     return true;
+  }
+
+  /**
+   * Actualiza el avatar del usuario
+   */
+  updateAvatar(userId: string, avatarBase64: string): boolean {
+    return this.updateProfile(userId, { avatar: avatarBase64 });
   }
 
   /**

@@ -1,0 +1,98 @@
+.welcome-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  text-align: center;
+
+  .logo {
+    max-width: 200px;
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-size: 2em;
+    margin-bottom: 10px;
+    color: var(--ion-color-primary);
+  }
+
+  .subtitle {
+    font-size: 1.1em;
+    color: var(--ion-color-medium);
+    margin-bottom: 30px;
+  }
+
+  .cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    max-width: 900px;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      justify-content: center;
+    }
+
+    .role-card {
+      flex: 1;
+      margin: 0;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      ion-card-header {
+        text-align: center;
+        padding: 20px;
+
+        ion-icon {
+          margin-bottom: 10px;
+        }
+
+        ion-card-title {
+          font-size: 1.3em;
+          font-weight: 600;
+          margin-bottom: 8px;
+        }
+
+        ion-card-subtitle {
+          font-size: 0.95em;
+          color: var(--ion-color-medium);
+        }
+      }
+
+      ion-card-content {
+        padding: 20px;
+
+        .features-list {
+          text-align: left;
+          margin: 0 0 20px 0;
+          padding-left: 20px;
+          color: var(--ion-color-dark);
+
+          li {
+            margin-bottom: 8px;
+            font-size: 0.9em;
+          }
+        }
+
+        .action-button {
+          margin-bottom: 12px;
+          --border-radius: 8px;
+          font-weight: 500;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+}
