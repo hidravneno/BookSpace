@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonButton, IonIcon, IonFab, IonFabButton, IonSpinner, AlertController, ModalController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonButton, IonIcon, IonFab, IonFabButton, IonSpinner, AlertController, ModalController, ToastController } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { add, businessOutline, homeOutline, ellipsisVertical, createOutline, trashOutline, peopleOutline, cashOutline, locationOutline, checkmarkCircle, closeCircle, calendarOutline } from 'ionicons/icons';
+import { add, businessOutline, homeOutline, ellipsisVertical, createOutline, trashOutline, peopleOutline, cashOutline, locationOutline, checkmarkCircle, closeCircle, calendarOutline, checkmarkCircleOutline, closeCircleOutline } from 'ionicons/icons';
 import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from '../../services/auth.service';
 import { Space } from '../../models/dashboard.models';
@@ -28,7 +28,8 @@ export class MySpacesPage implements OnInit {
     private dashboardService: DashboardService,
     private authService: AuthService,
     private alertController: AlertController,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private toastController: ToastController
   ) {
     addIcons({ 
       add, 
@@ -41,7 +42,9 @@ export class MySpacesPage implements OnInit {
       cashOutline,
       locationOutline,
       checkmarkCircle,
-      closeCircle
+      closeCircle,
+      checkmarkCircleOutline,
+      closeCircleOutline
     });
   }
 
@@ -169,8 +172,8 @@ export class MySpacesPage implements OnInit {
         {
           text: 'Eliminar',
           role: 'destructive',
-          handler: () => {
-            this.deleteSpace(space);
+          handler: async () => {
+            await this.deleteSpace(space);
           }
         }
       ]
@@ -182,11 +185,36 @@ export class MySpacesPage implements OnInit {
   /**
    * Elimina un espacio
    */
-  deleteSpace(space: Space) {
-    // TODO: Implementar eliminación en el servicio
-    console.log('Eliminar espacio:', space);
-    this.spaces = this.spaces.filter(s => s.id !== space.id);
-    // Aquí deberías llamar al servicio para eliminar del localStorage
+  async deleteSpace(space: Space) {
+    const deleted = this.dashboardService.deleteSpace(space.id);
+    if (deleted) {
+      // Actualizar la lista local inmediatamente
+      this.spaces = this.spaces.filter(s => s.id !== space.id);
+      
+      // Mostrar mensaje de confirmación
+      const toast = await this.toastController.create({
+        message: `"${space.name}" ha sido eliminado correctamente`,
+        duration: 3000,
+        position: 'bottom',
+        color: 'success',
+        icon: 'checkmark-circle-outline'
+      });
+      await toast.present();
+      
+      console.log('Espacio eliminado correctamente:', space.name);
+    } else {
+      // Mostrar mensaje de error
+      const toast = await this.toastController.create({
+        message: `Error al eliminar "${space.name}"`,
+        duration: 3000,
+        position: 'bottom',
+        color: 'danger',
+        icon: 'close-circle-outline'
+      });
+      await toast.present();
+      
+      console.error('Error al eliminar el espacio:', space.name);
+    }
   }
 
   /**
