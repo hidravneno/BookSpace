@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonHeader, IonToolbar, IonTitle, IonButtons, IonButton, IonIcon, IonContent, IonCard, IonCardHeader, IonCardTitle, IonCardContent, IonChip, IonLabel, IonBadge, ModalController } from '@ionic/angular/standalone';
+import { addIcons } from 'ionicons';
+import { closeOutline, arrowForwardOutline, trashOutline, calendarOutline, cashOutline, alertCircleOutline, informationCircleOutline, notificationsOutline, checkmarkCircleOutline, timeOutline, linkOutline } from 'ionicons/icons';
 import { Notification } from '../../models/dashboard.models';
 
 @Component({
@@ -222,7 +224,21 @@ import { Notification } from '../../models/dashboard.models';
 export class NotificationDetailModalComponent {
   @Input() notification!: Notification;
 
-  constructor(private modalController: ModalController) {}
+  constructor(private modalController: ModalController) {
+    addIcons({
+      closeOutline,
+      arrowForwardOutline,
+      trashOutline,
+      calendarOutline,
+      cashOutline,
+      alertCircleOutline,
+      informationCircleOutline,
+      notificationsOutline,
+      checkmarkCircleOutline,
+      timeOutline,
+      linkOutline
+    });
+  }
 
   dismiss() {
     this.modalController.dismiss();

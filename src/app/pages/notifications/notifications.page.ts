@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList, IonItem, IonLabel, IonBadge, IonIcon, IonButton, IonChip, IonSegment, IonSegmentButton, IonRefresher, IonRefresherContent, IonSpinner, AlertController, ActionSheetController, ModalController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonList, IonItem, IonLabel, IonBadge, IonIcon, IonButton, IonChip, IonSegment, IonSegmentButton, IonRefresher, IonRefresherContent, IonSpinner, AlertController, ActionSheetController, ModalController, ToastController } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { notificationsOutline, checkmarkCircleOutline, warningOutline, informationCircleOutline, cashOutline, calendarOutline, alertCircleOutline, checkmarkDoneOutline, trashOutline, ellipsisVertical, filterOutline, closeOutline, timeOutline, linkOutline, arrowForwardOutline } from 'ionicons/icons';
 import { DashboardService } from '../../services/dashboard.service';
@@ -35,6 +35,7 @@ export class NotificationsPage implements OnInit {
     private alertController: AlertController,
     private actionSheetController: ActionSheetController,
     private modalController: ModalController,
+    private toastController: ToastController,
     private router: Router
   ) {
     addIcons({ 
@@ -217,22 +218,68 @@ export class NotificationsPage implements OnInit {
   }
 
   async navigateFromNotification(notification: Notification) {
+    // Cerrar el modal si está abierto
+    await this.modalController.dismiss();
+    
+    // Mostrar un toast de navegación
+    let destination = '';
+    let route = '';
     
     // Navegar según el tipo de notificación
     if (notification.actionUrl) {
-      await this.router.navigate([notification.actionUrl]);
+      route = notification.actionUrl;
+      destination = 'la página solicitada';
     } else if (notification.relatedId) {
       // Determinar la ruta según el tipo
       switch (notification.type) {
         case 'reservation':
-          await this.router.navigate(['/reservations-calendar']);
+          route = '/reservations-calendar';
+          destination = 'el calendario de reservas';
           break;
         case 'payment':
-          await this.router.navigate(['/payments']);
+          route = '/payments';
+          destination = 'la página de pagos';
+          break;
+        case 'cancellation':
+          route = '/reservations-calendar';
+          destination = 'el calendario de reservas';
+          break;
+        case 'reminder':
+          route = '/reservations-calendar';
+          destination = 'el calendario de reservas';
+          break;
+        case 'system':
+          route = '/dashboard';
+          destination = 'el dashboard';
           break;
         default:
           break;
       }
+    }
+    
+    if (route) {
+      // Mostrar toast de feedback
+      const toast = await this.toastController.create({
+        message: `Navegando a ${destination}...`,
+        duration: 2000,
+        position: 'bottom',
+        color: 'primary',
+        icon: 'arrow-forward-outline'
+      });
+      await toast.present();
+      
+      // Navegar
+      await this.router.navigate([route]);
+    } else {
+      // Si no hay ninguna referencia, mostrar mensaje
+      const toast = await this.toastController.create({
+        message: 'No hay detalles adicionales disponibles',
+        duration: 2000,
+        position: 'bottom',
+        color: 'medium',
+        icon: 'information-circle-outline'
+      });
+      await toast.present();
     }
   }
 

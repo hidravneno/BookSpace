@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonButton, IonIcon, IonFab, IonFabButton, IonSpinner, AlertController } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonButtons, IonMenuButton, IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent, IonButton, IonIcon, IonFab, IonFabButton, IonSpinner, AlertController, ModalController } from '@ionic/angular/standalone';
 import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
 import { add, businessOutline, homeOutline, ellipsisVertical, createOutline, trashOutline, peopleOutline, cashOutline, locationOutline, checkmarkCircle, closeCircle, calendarOutline } from 'ionicons/icons';
 import { DashboardService } from '../../services/dashboard.service';
 import { AuthService } from '../../services/auth.service';
 import { Space } from '../../models/dashboard.models';
+import { EditSpaceModalComponent } from '../../components/edit-space-modal/edit-space-modal.component';
 
 @Component({
   selector: 'app-my-spaces',
@@ -26,7 +27,8 @@ export class MySpacesPage implements OnInit {
     private router: Router,
     private dashboardService: DashboardService,
     private authService: AuthService,
-    private alertController: AlertController
+    private alertController: AlertController,
+    private modalController: ModalController
   ) {
     addIcons({ 
       add, 
@@ -134,10 +136,22 @@ export class MySpacesPage implements OnInit {
   /**
    * Edita un espacio
    */
-  editSpace(space: Space) {
-    // TODO: Implementar navegación a página de edición
-    console.log('Editar espacio:', space);
-    // this.router.navigate(['/edit-space', space.id]);
+  async editSpace(space: Space) {
+    const modal = await this.modalController.create({
+      component: EditSpaceModalComponent,
+      componentProps: {
+        space: space
+      }
+    });
+
+    modal.onDidDismiss().then((result) => {
+      if (result.data && result.data.action === 'updated') {
+        // Recargar los espacios después de la actualización
+        this.loadSpaces();
+      }
+    });
+
+    await modal.present();
   }
 
   /**
